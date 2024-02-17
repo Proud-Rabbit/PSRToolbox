@@ -2,11 +2,14 @@ name: Build Module
 
 on:
   workflow_dispatch:
+
   pull_request:
     branches: [main]
+
 defaults:
   run:
     shell: pwsh
+
 jobs:
   build:
     name: Build
