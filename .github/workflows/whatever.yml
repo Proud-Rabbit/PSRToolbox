@@ -4,13 +4,12 @@ on:
 defaults:
   run:
     shell: pwsh
-
 jobs:
   builds-on-pr:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: "actions/checkout@main"
+        uses: actions/checkout@v4
       - name: Build the library
         run: |
           build.ps1
