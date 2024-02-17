@@ -21,4 +21,11 @@ jobs:
         run: |
           Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
           Install-Module dbatools -Force
-          
+      
+      - name: Encode password from plaintext
+        run: |
+          $enc = ConvertTo-SecureString -String ddbtools.IO -AsPlaintext -Force
+          $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sa", $enc
+
+      - name: Connect to SQL server using Invoke-DbaQuery
+        run: Invoke-DbaQuery -SqlInstance localhost -SqlCredential $cred -Query "SELECT @@VERSION"
