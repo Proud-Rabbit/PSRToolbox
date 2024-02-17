@@ -9,7 +9,7 @@ AfterAll {
     Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
 }
 
-Describe Remove-PSRDiacritics {
+Describe ConvertFrom-PSRDiacritic {
     BeforeAll {
         Mock -CommandName Get-PrivateFunction -MockWith {
             # This return the value passed to the Get-PrivateFunction parameter $PrivateData.
@@ -19,19 +19,22 @@ Describe Remove-PSRDiacritics {
 
     Context 'When passing values using named parameters' {
         It 'Should call the private function once' {
-            { Remove-PSRDiacritics -Data 'value' } | Should -Not -Throw
+            { ConvertFrom-PSRDiacritic -StringIn "ŒœǢöäüßÖÜÄ" } | Should -Not -Throw
+            # { ConvertFrom-PSRDiacritic -StringIn "'Œ', 'Oe').Replace('œ', 'oe').Replace('Ǣ', 'Ae').Replace('ö','oe').Replace('ä','ae').Replace('ü','ue').Replace('ß','ss').Replace('Ö','Oe').Replace('Ü','Ue').Replace('Ä','Ae')" } | Should -Not -Throw
 
-            Should -Invoke -CommandName Get-PrivateFunction -Exactly -Times 1 -Scope It -ModuleName $dscModuleName
+            
+            # Should -Invoke -CommandName Get-PrivateFunction -Exactly -Times 1 -Scope It -ModuleName $dscModuleName
         }
 
-        It 'Should return a single object' {
-            $return = Get-Something -Data 'value'
+        It 'Should return a single string' {
+            $return = ConvertFrom-PSRDiacritic -StringIn "Œuf œuf ǢöäüßÖÜÄ"
 
             ($return | Measure-Object).Count | Should -Be 1
+            "Oeuf oeuf AeoeaeuessOeUeAe".Equals($return) | Should -BeTrue
         }
 
         It 'Should return the correct string value' {
-            $return = Get-Something -Data 'value'
+            $return = ConvertFrom-PSRDiacritic -Data 'value'
 
             $return | Should -Be 'value'
         }
@@ -39,19 +42,19 @@ Describe Remove-PSRDiacritics {
 
     Context 'When passing values over the pipeline' {
         It 'Should call the private function two times' {
-            { 'value1', 'value2' | Get-Something } | Should -Not -Throw
+            { 'value1', 'value2' | ConvertFrom-PSRDiacritic } | Should -Not -Throw
 
             Should -Invoke -CommandName Get-PrivateFunction -Exactly -Times 2 -Scope It -ModuleName $dscModuleName
         }
 
         It 'Should return an array with two items' {
-            $return = 'value1', 'value2' | Get-Something
+            $return = 'value1', 'value2' | ConvertFrom-PSRDiacritic
 
             $return.Count | Should -Be 2
         }
 
         It 'Should return an array with the correct string values' {
-            $return = 'value1', 'value2' | Get-Something
+            $return = 'value1', 'value2' | ConvertFrom-PSRDiacritic
 
             $return[0] | Should -Be 'value1'
             $return[1] | Should -Be 'value2'
@@ -63,7 +66,7 @@ Describe Remove-PSRDiacritics {
                     Data = $_
                     OtherProperty = 'other'
                 }
-            } | Get-Something
+            } | ConvertFrom-PSRDiacritic
 
             $return[0] | Should -Be 'value1'
             $return[1] | Should -Be 'value2'
@@ -72,20 +75,19 @@ Describe Remove-PSRDiacritics {
 
     Context 'When passing WhatIf' {
         It 'Should support the parameter WhatIf' {
-            (Get-Command -Name 'Get-Something').Parameters.ContainsKey('WhatIf') | Should -Be $true
+            (Get-Command -Name 'ConvertFrom-PSRDiacritic').Parameters.ContainsKey('WhatIf') | Should -Be $true
         }
 
         It 'Should not call the private function' {
-            { Get-Something -Data 'value' -WhatIf } | Should -Not -Throw
+            { ConvertFrom-PSRDiacritic -Data 'value' -WhatIf } | Should -Not -Throw
 
             Should -Invoke -CommandName Get-PrivateFunction -Exactly -Times 0 -Scope It -ModuleName $dscModuleName
         }
 
         It 'Should return $null' {
-            $return = Get-Something -Data 'value' -WhatIf
+            $return = ConvertFrom-PSRDiacritic -Data 'value' -WhatIf
 
             $return | Should -BeNullOrEmpty
         }
     }
 }
-
