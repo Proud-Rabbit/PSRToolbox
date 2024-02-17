@@ -2,7 +2,11 @@ name: Build Module
 
 on:
   workflow_dispatch:
-
+  pull_request:
+    branches: [Master]
+defaults:
+  run:
+    shell: pwsh
 jobs:
   build:
     name: Build
@@ -12,4 +16,3 @@ jobs:
       - name: Build the library
         run: |
           build.ps1
-  
