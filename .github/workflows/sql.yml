@@ -14,8 +14,7 @@ jobs:
 
       - name: Setup docker images
         run: |
-          docker pull mcr.microsoft.com/mssql/server:2019-latest
-          docker run -e "ACCEPT_EULA=Y" -e "dbtools.IO" -p 1433:1433 --name sql1 -h sql1 -d mcr.microsoft.com/mssql/server:2019-latest
+          docker run -e "ACCEPT_EULA=Y" -e "password=dbtools.IO" -p 1433:1433 --name localhost -h localhost -d mcr.microsoft.com/mssql/server:2019-latest
 
       - name: Install DBTools
         run: |
