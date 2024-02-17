@@ -3,7 +3,7 @@ name: Build Module
 on:
   workflow_dispatch:
   pull_request:
-    branches: [Master]
+    branches: [main]
 defaults:
   run:
     shell: pwsh
