@@ -7,10 +7,10 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     # env:
-      # GITHUB_TOKEN: ${{secret:GITHUB_TOKEN}}
+    # GITHUB_TOKEN: ${{secret:GITHUB_TOKEN}}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Setup docker images
         run: |
@@ -20,7 +20,7 @@ jobs:
         run: |
           Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
           Install-Module dbatools -Force
-      
+
       - name: Encode password from plaintext
         run: |
           $enc = ConvertTo-SecureString -String dbtools.I0 -AsPlaintext -Force
