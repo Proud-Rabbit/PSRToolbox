@@ -1,21 +1,16 @@
 name: Build Module
-
 on:
   workflow_dispatch:
-
-  pull_request:
-    branches: [main]
-
 defaults:
   run:
     shell: pwsh
 
 jobs:
-  build:
-    name: Build
+  builds-on-pr:
     runs-on: ubuntu-latest
     steps:
-      - uses: "actions/checkout@main"
+      - name: Checkout
+        uses: "actions/checkout@main"
       - name: Build the library
         run: |
           build.ps1
