@@ -14,7 +14,7 @@ jobs:
 
       - name: Setup docker images
         run: |
-          docker run -e "ACCEPT_EULA=Y" -e "password=dbtools.IO" -p 1433:1433 --name localhost -h localhost -d mcr.microsoft.com/mssql/server:2019-latest
+          docker run -e "ACCEPT_EULA=Y" -e "password=dbtools.I0" -p 1433:1433 --name localhost -h localhost -d mcr.microsoft.com/mssql/server:2019-latest
 
       - name: Install DBTools
         run: |
@@ -23,7 +23,7 @@ jobs:
       
       - name: Encode password from plaintext
         run: |
-          $enc = ConvertTo-SecureString -String dbtools.IO -AsPlaintext -Force
+          $enc = ConvertTo-SecureString -String dbtools.I0 -AsPlaintext -Force
           $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sa", $enc
           Import-Module dbatools
           Invoke-DbaQuery -SqlInstance localhost -SqlCredential $cred -Query "SELECT @@VERSION" -Verbose
