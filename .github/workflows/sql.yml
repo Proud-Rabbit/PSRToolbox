@@ -27,4 +27,6 @@ jobs:
           $cred = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList "sa", $enc
 
       - name: Connect to SQL server using Invoke-DbaQuery
-        run: Invoke-DbaQuery -SqlInstance localhost -SqlCredential $cred -Query "SELECT @@VERSION"
+        run: |
+          Import-Module dbatools
+          Invoke-DbaQuery -SqlInstance localhost -SqlCredential $cred -Query "SELECT @@VERSION" -Verbose
