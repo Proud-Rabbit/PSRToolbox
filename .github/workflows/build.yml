@@ -44,7 +44,7 @@ jobs:
         run: |
           & .\build.ps1 -task pack
       - name: Publish Build Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           path: ${{ env.buildFolderName }}/
   # Test_Stage_test_linux:
@@ -85,6 +85,8 @@ jobs:
 #       - name: Download Build Artifact
 #         uses: actions/download-artifact@v4
 #       - name: Run Tests
+#         run: |
+#           & .\build.ps1 -tasks test
 # #      - # "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
 #         name: Publish Test Results
 #         run: |
