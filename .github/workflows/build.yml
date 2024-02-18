@@ -29,10 +29,13 @@ jobs:
     steps:
       - uses: actions/checkout@main
       - name: Calculate ModuleVersion (GitVersion)
-        run: |
-          dotnet tool install --global GitVersion.Tool
-          $gitVersionObject = dotnet-gitversion
-          Write-Host -Object "$gitVersionObject"
+        uses: gittools/actions/gitversion/setup@v0
+        with:
+          versionSpec: '5.x'
+          #     run: |
+          # dotnet tool install --global GitVersion.Tool
+          # $gitVersionObject = dotnet-gitversion
+          # Write-Host -Object "$gitVersionObject"
           #  | ConvertFrom-Json
           # $gitVersionObject.PSObject.Properties.ForEach{
           #     Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
