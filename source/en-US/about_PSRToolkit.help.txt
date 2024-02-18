@@ -8,7 +8,7 @@ LONG DESCRIPTION
     Bundle of handy Powershell functions
 
 EXAMPLES
-    PS C:\> {{ add examples here }}
+    PS C:\> ConvertFrom-PSRDiacritic -StringIn "Élève"
 
 NOTE:
     Thank you to all those who contributed to this module, by writing code, sharing opinions, and provided feedback.
@@ -17,8 +17,7 @@ TROUBLESHOOTING NOTE:
     Look out on the Github repository for issues and new releases.
 
 SEE ALSO
-    - {{ Please add Project URI such as github }}}
+    - https://github.com/ProudRabbit/PSRToolkit
 
 KEYWORDS
-    {{ Add comma separated keywords here }}
-
+    Handy,Tools
