@@ -31,22 +31,24 @@ jobs:
       - name: Calculate ModuleVersion (GitVersion)
         run: |
           dotnet tool install --global GitVersion.Tool
-          $gitVersionObject = dotnet-gitversion | ConvertFrom-Json
-          $gitVersionObject.PSObject.Properties.ForEach{
-              Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
-              Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
-          }
-          Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
+          $gitVersionObject = dotnet-gitversion
+          Write-Host -Object "$gitVersionObject"
+          #  | ConvertFrom-Json
+          # $gitVersionObject.PSObject.Properties.ForEach{
+          #     Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
+          #     Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
+          # }
+          # Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
 
-      - name: Build and Package Module
-        env:
-          ModuleVersion: ${{ env.NuGetVersionV2 }}
-        run: |
-          & .\build.ps1 -task pack
-      - name: Publish Build Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          path: ${{ env.buildFolderName }}/
+      # - name: Build and Package Module
+      #   env:
+      #     ModuleVersion: ${{ env.NuGetVersionV2 }}
+      #   run: |
+      #     & .\build.ps1 -task pack
+      # - name: Publish Build Artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     path: ${{ env.buildFolderName }}/
   # Test_Stage_test_linux:
   #   name: Linux
   #   runs-on: ubuntu-latest
