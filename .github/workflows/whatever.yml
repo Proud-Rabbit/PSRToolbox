@@ -12,7 +12,7 @@ jobs:
       - name: Build the library
         run: |
           Write-Output $PWD
-          Write-Output ${{GITHUB_WORKSPACE}}
-          ls ${{GITHUB_WORKSPACE}}
-          cd ${{GITHUB_WORKSPACE}}
+          Write-Output $GITHUB_WORKSPACE
+          ls $GITHUB_WORKSPACE
+          cd $GITHUB_WORKSPACE
           build.ps1
