@@ -1,5 +1,7 @@
 name: Build Module
-on: [push]
+on:
+  workflow_dispatch:
+
 defaults:
   run:
     shell: pwsh
