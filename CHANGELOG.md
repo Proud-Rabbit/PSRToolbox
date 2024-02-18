@@ -7,25 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- For new features.
+- ConertFrom-PSRDiacritic
 
 ### Changed
 
-- For changes in existing functionality.
+- N/A
 
 ### Deprecated
 
-- For soon-to-be removed features.
+- N/A
 
 ### Removed
 
-- For now removed features.
+- N/A
 
 ### Fixed
 
-- For any bug fix.
+- N/A
 
 ### Security
 
-- In case of vulnerabilities.
-
+- N/A

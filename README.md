@@ -2,12 +2,25 @@
 
 Bundle of handy Powershell functions
 
-## Make it yours
+## Code of Conduct
 
----
-Generated with Plaster and the SampleModule template
+This project has adopted [this code of conduct](CODE_OF_CONDUCT.md).
 
+## Releases
 
-This is a sample Readme
+For each merge to the branch `main` a preview release will be
+deployed.
+Periodically a release version tag will be pushed which will deploy a
+full release.
 
-## Make it yours
+## Contributing
+
+Please check out common DSC Community [contributing guidelines](https://dsccommunity.org/guidelines/contributing).
+
+## Change log
+
+A full list of changes in each version can be found in the [change log](CHANGELOG.md).
+
+## Functions
+
+- ConvertFrom-PSRDiacritic
