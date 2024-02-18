@@ -1,7 +1,28 @@
-﻿function ConvertFrom-PSRDiacritic {
+﻿<#
+.SYNOPSIS
+    Convert a diacritic containing string to diacriticless string
+.DESCRIPTION
+    Convert a diacritic containing string (with accents, cedille, ...) and dual chars to diacriticless string
+    This is handy to transform a string of an E-mail for example that is supported by the most mail infrastructures.
+.PARAMETER StringIn
+    String that should be dedicritisized.
+.NOTES
+    I suspect that I don't have listed all possible dual characters
+.EXAMPLE
+    ConvertFrom-PSRDiacritic -StringIn "Œuf élève één coördinatie"
+    Returns "Oeuf eleve een coordinatie"
+.EXAMPLE
+    "Œuf élève één coördinatie" | ConvertFrom-PSRDiacritic
+    Returns "Oeuf eleve een coordinatie"
+#>
+function ConvertFrom-PSRDiacritic {
     [cmdletbinding()]
     param (
-        [Parameter(Mandatory=$true,ValueFromPipeline=$true)]
+        [Parameter(
+            Mandatory=$true,
+            ValueFromPipeline=$true,
+            ValueFromPipelineByPropertyName=$true
+        )]
         [string]$StringIn
     )
 
