@@ -1,5 +1,7 @@
 name: test a query
-on: [push]
+on:
+  workflow_dispatch:
+
 defaults:
   run:
     shell: pwsh
