@@ -46,7 +46,9 @@ jobs:
         run: |
           $gitVersionObject = dotnet-gitversion
           # | ConvertFrom-Json
-          Write-Host -Object "gitVersionObject: $($gitVersionObject[0].GetType().Fullname)"
+          Write-Host -Object "gitVersionObject: $($gitVersionObject.Count)"
+          foreach ($line in $gitVersionObject) { Write-Host $line }
+          ForEach
           # $gitVersionObject.PSObject.Properties.ForEach{
           #     Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
           #     Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
