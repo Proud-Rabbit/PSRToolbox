@@ -44,12 +44,14 @@ jobs:
           # Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
       - name: package
         run: |
-          $gitVersionObject = dotnet-gitversion | ConvertFrom-Json
-          $gitVersionObject.PSObject.Properties.ForEach{
-              Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
-              Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
-          }
-          Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
+          $gitVersionObject = dotnet-gitversion
+          # | ConvertFrom-Json
+          Write-Host -Object $gitVersionObject.ToString()
+          # $gitVersionObject.PSObject.Properties.ForEach{
+          #     Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
+          #     Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
+          # }
+          # Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
 
           # & .\build.ps1 -ResolveDependency -tasks pack
 
