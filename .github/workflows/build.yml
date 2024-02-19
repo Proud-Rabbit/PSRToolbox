@@ -42,7 +42,7 @@ jobs:
           #     Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
           # }
           # Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
-
+      - name: package
         run: |
           & .\build.ps1 -ResolveDependency -tasks pack
 
