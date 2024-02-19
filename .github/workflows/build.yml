@@ -50,7 +50,6 @@ jobs:
       #   env:
       #     ModuleVersion: ${{ env.NuGetVersionV2 }}
       #   run: |
-          & .\build.ps1 -task pack
       # - name: Publish Build Artifact
       #   uses: actions/upload-artifact@v4
       #   with:
