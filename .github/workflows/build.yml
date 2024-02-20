@@ -49,7 +49,7 @@ jobs:
     steps:
       - uses: actions/checkout@main
       - name: Download Build Artifact
-        uses: actions/download-artifact@v0
+        uses: actions/download-artifact@v4
         with:
           name: output
           path: output
