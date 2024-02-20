@@ -49,7 +49,7 @@ jobs:
           # Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
       - name: package
         run: |
-          & .\build.ps1 -ResolveDependency
+          # & .\build.ps1 -ResolveDependency
           $gitVersionObject = dotnet-gitversion
           # | ConvertFrom-Json
           Write-Host -Object "gitVersionObject: $($gitVersionObject.Count)"
