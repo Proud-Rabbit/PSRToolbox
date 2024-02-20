@@ -3,7 +3,11 @@
 #Error (line 84): the step 'PublishTestResults@2' does not have a conversion path yet
 #Error (line 87): the step 'PublishTestResults@2' does not have a conversion path yet
 name: Build Module
-on: [push]
+on:
+  pull_request_review:
+    types:
+      - submitted
+      - edited
 defaults:
   run:
     shell: pwsh
