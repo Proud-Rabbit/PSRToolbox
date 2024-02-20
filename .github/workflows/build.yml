@@ -4,7 +4,7 @@
 #Error (line 87): the step 'PublishTestResults@2' does not have a conversion path yet
 name: Build Module
 on:
-  - pull
+  - push
   # pull_request_review:
   #   types:
   #     - submitted
