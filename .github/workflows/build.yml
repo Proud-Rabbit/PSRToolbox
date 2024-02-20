@@ -81,6 +81,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: output
+          path: output
       - name: Run Tests
         run: |
           ./build.ps1 -Tasks test
