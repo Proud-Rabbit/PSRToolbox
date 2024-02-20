@@ -30,9 +30,15 @@ Describe ConvertFrom-PSRDiacritic {
             $return = ConvertFrom-PSRDiacritic -StringIn "Œuf œuf ǢöäüßÖÜÄ"
 
             ($return | Measure-Object).Count | Should -Be 1
-            $return | Should -Be "Oeuf oeuf AeoeaeuessOeUeAe"
+            $return | Should -Be "Oeuf oeuf AeoaussOUA"
         }
 
+        It 'Given the PHP iconv list should return the correct string' {
+            $return = ConvertFrom-PSRDiacritic -StringIn "Š š s Ð Ž  ž À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ñ Ń Ò Ó Ô Õ Ö Ø Ù Ú Û Ü Ý Þ ß à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ń ò ó ô õ ö ø ù ú û ü ý ý þ ÿ ƒ ă î â ș ț Ă Î Â Ș Ț"
+
+            ($return | Measure-Object).Count | Should -Be 1
+            $return | Should -Be "S s s Dj Z  z A A A A A A Ae C E E E E I I I I N N O O O O O O U U U U Y B ss a a a a a a ae c e e e e i i i i o n n o o o o o o u u u u y y b y f a i a s t A I A S T"
+        }
     }
 
     Context 'When passing values over the pipeline' {
@@ -40,7 +46,7 @@ Describe ConvertFrom-PSRDiacritic {
             $return = "Œuf œuf ǢöäüßÖÜÄ" | ConvertFrom-PSRDiacritic
 
             ($return | Measure-Object).Count | Should -Be 1
-            $return | Should -Be "Oeuf oeuf AeoeaeuessOeUeAe"
+            $return | Should -Be "Oeuf oeuf AeoaussOUA"
         }
 
         It 'Should return an array with two items' {
