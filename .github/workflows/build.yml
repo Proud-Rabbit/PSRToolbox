@@ -27,13 +27,19 @@ jobs:
         uses: actions/checkout@main
         with:
           fetch-depth: 0
-      - name: Calculate ModuleVersion (GitVersion)
+      - name: Setup GitVersion
         uses: gittools/actions/gitversion/setup@v0
         with:
           versionSpec: "5.x"
-      - name: package
+      - name: Package
         run: |
-          & .\build.ps1 -ResolveDependency -Tasks pack
+          .\build.ps1 -ResolveDependency -Tasks pack
+      - name: Publish Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: output
+          path: |
+            output
 
   # Test_Stage_test_linux:
   #   name: Linux
@@ -94,17 +100,20 @@ jobs:
 #         with:
 #           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
 #           name: CodeCoverageWinPS7
-# Test_Stage_test_windows_ps:
-#   name: Windows (Windows PowerShell)
-#   runs-on: windows-latest
-#   needs:
-#     - Build_Stage_Package_Module
-#   steps:
-#     - uses: actions/checkout@v2
-#     - name: Download Build Artifact
-#       uses: actions/download-artifact@v2
-#     - name: Run Tests
-#       shell: powershell
+  Test_Stage_test_windows_ps:
+    name: Windows (Windows PowerShell)
+    runs-on: windows-latest
+    needs:
+    - Build_Stage_Package_Module
+    steps:
+    # - uses: actions/checkout@main
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+      - name: Run Tests
+        shell: powershell
+        run: |
+          .\build.ps1 -Tasks test
+
 #     - # "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
 #       name: Publish Test Results
 #       run: |
