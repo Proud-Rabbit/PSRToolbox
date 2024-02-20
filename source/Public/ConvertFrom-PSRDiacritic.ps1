@@ -15,28 +15,32 @@
     "Œuf élève één coördinatie" | ConvertFrom-PSRDiacritic
     Returns "Oeuf eleve een coordinatie"
 #>
-function ConvertFrom-PSRDiacritic {
+function ConvertFrom-PSRDiacritic
+{
     [cmdletbinding()]
     param (
         [Parameter(
-            Mandatory=$true,
-            ValueFromPipeline=$true,
-            ValueFromPipelineByPropertyName=$true
+            Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true
         )]
         [string]$StringIn
     )
 
-    Process {
+    Process
+    {
         Write-Verbose "Starting with    : $StringIn"
 
-        $StrConv = $StringIn.Replace('Œ', 'Oe').Replace('œ', 'oe').Replace('Ǣ', 'Ae').Replace('ö','oe').Replace('ä','ae').Replace('ü','ue').Replace('ß','ss').Replace('Ö','Oe').Replace('Ü','Ue').Replace('Ä','Ae')
+        $StrConv = $StringIn.Replace('Æ', 'Ae').Replace('Ǣ', 'Ae').Replace('Þ', 'B').Replace('Ð', 'Dj').Replace('Ø', 'O').Replace('Œ', 'Oe').Replace('æ', 'ae').Replace('þ', 'b').Replace('ƒ', 'f').Replace('ð', 'o').Replace('ø', 'o').Replace('œ', 'oe').Replace('ß', 'ss')
         $formd = $StrConv.Normalize([System.Text.NormalizationForm]::FormD)
         Write-Verbose "Form D Conversion: $formd"
         $sb = New-Object System.Text.StringBuilder
-        foreach($char in [char[]]$formd) {
+        foreach ($char in [char[]]$formd)
+        {
             Write-Verbose "Processing Character $char"
             [System.Globalization.UnicodeCategory]$uc = [System.Globalization.CharUnicodeInfo]::GetUnicodeCategory($char)
-            if($uc -ne [System.Globalization.UnicodeCategory]::NonSpacingMark) {
+            if ($uc -ne [System.Globalization.UnicodeCategory]::NonSpacingMark)
+            {
                 $sb.Append($char) | Out-Null
             }
         }
