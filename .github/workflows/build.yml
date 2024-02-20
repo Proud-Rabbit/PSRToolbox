@@ -70,18 +70,18 @@ jobs:
   #         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
   #         name: CodeCoverageLinux
 
-#   Test_Stage_test_windows_core:
-#     name: Windows (PowerShell)
-#     runs-on: windows-latest
-#     needs:
-#       - Build_Stage_Package_Module
-#     steps:
-#       - uses: actions/checkout@main
-#       - name: Download Build Artifact
-#         uses: actions/download-artifact@v4
-#       - name: Run Tests
-#         run: |
-#           & .\build.ps1 -tasks test
+  Test_Stage_test_windows_core:
+    name: Windows (PowerShell)
+    runs-on: windows-latest
+    needs:
+      - Build_Stage_Package_Module
+    steps:
+      - uses: actions/checkout@main
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+      - name: Run Tests
+        run: |
+          .\build.ps1 -tasks test
 # #      - # "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
 #         name: Publish Test Results
 #         run: |
@@ -100,19 +100,20 @@ jobs:
 #         with:
 #           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
 #           name: CodeCoverageWinPS7
-  Test_Stage_test_windows_ps:
-    name: Windows (Windows PowerShell)
-    runs-on: windows-latest
-    needs:
-    - Build_Stage_Package_Module
-    steps:
-      - uses: actions/checkout@main
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v4
-      - name: Run Tests
-        shell: powershell
-        run: |
-          .\build.ps1 -Tasks test
+
+  # Test_Stage_test_windows_ps:
+  #   name: Windows (Windows PowerShell)
+  #   runs-on: windows-latest
+  #   needs:
+  #   - Build_Stage_Package_Module
+  #   steps:
+  #     - uses: actions/checkout@main
+  #     - name: Download Build Artifact
+  #       uses: actions/download-artifact@v4
+  #     - name: Run Tests
+  #       shell: powershell
+  #       run: |
+  #         .\build.ps1 -Tasks test
 
 #     - # "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
 #       name: Publish Test Results
