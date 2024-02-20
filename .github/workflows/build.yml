@@ -33,7 +33,7 @@ jobs:
           versionSpec: "5.x"
       - name: Package
         run: |
-          .\build.ps1 -ResolveDependency -Tasks pack
+          ./build.ps1 -ResolveDependency -Tasks pack
       - name: Publish Build Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -71,7 +71,7 @@ jobs:
   #         name: CodeCoverageLinux
 
   Test_Stage_test_windows_core:
-    name: Windows (PowerShell)
+    name: Windows (PWSH)
     runs-on: windows-latest
     needs:
       - Build_Stage_Package_Module
@@ -79,9 +79,11 @@ jobs:
       - uses: actions/checkout@main
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
+        with:
+          name: output
       - name: Run Tests
         run: |
-          .\build.ps1 -tasks test
+          ./build.ps1 -Tasks test
 # #      - # "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
 #         name: Publish Test Results
 #         run: |
