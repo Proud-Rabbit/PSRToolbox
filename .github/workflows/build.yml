@@ -37,10 +37,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@main
-      - name: Fetch all history for tags and branches
-        run: |
-          git fetch --unshallow
-          #; git checkout ProudRabbit; git checkout main
+        with:
+        - fetch-depth: 0
+      # - name: Fetch all history for tags and branches
+      #   run: |
+      #     git fetch --unshallow
+      #     #; git checkout ProudRabbit; git checkout main
       - name: Calculate ModuleVersion (GitVersion)
         uses: gittools/actions/gitversion/setup@v0
         with:
@@ -57,18 +59,18 @@ jobs:
           # Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
       - name: package
         run: |
-          # & .\build.ps1 -ResolveDependency
-          $gitVersionObject = dotnet-gitversion
-          # | ConvertFrom-Json
-          Write-Host -Object "gitVersionObject: $($gitVersionObject.Count)"
-          foreach ($line in $gitVersionObject) { Write-Host $line }
-          # $gitVersionObject.PSObject.Properties.ForEach{
-          #     Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
-          #     Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
-          # }
-          # Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
+          & .\build.ps1 -ResolveDependency
+          # $gitVersionObject = dotnet-gitversion
+          # # | ConvertFrom-Json
+          # Write-Host -Object "gitVersionObject: $($gitVersionObject.Count)"
+          # foreach ($line in $gitVersionObject) { Write-Host $line }
+          # # $gitVersionObject.PSObject.Properties.ForEach{
+          # #     Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
+          # #     Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
+          # # }
+          # # Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
 
-          # & .\build.ps1 -ResolveDependency -tasks pack
+          # # & .\build.ps1 -ResolveDependency -tasks pack
 
       # - name: Build and Package Module
       #   env:
