@@ -175,7 +175,7 @@ jobs:
       - uses: actions/checkout@main
       - name: Set Environment Variables
         run: |
-          $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
+          $repositoryOwner,$repositoryName = ${env:BUILD_REPOSITORY_NAME} -split '/'
           echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
           echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
 #     - name: Download Pipeline Artifact
