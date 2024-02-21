@@ -57,23 +57,17 @@ jobs:
       - name: Run Tests
         run: |
           ./build.ps1 -Tasks test
-  #     - # "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
-  #       name: Publish Test Results
-  #       run: |
-  #         echo "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
-  #         #task: PublishTestResults@2
-  #         #displayName: Publish Test Results
-  #         #condition: succeededOrFailed()
-  #         #inputs:
-  #         #  testresultsformat: NUnit
-  #         #  testresultsfiles: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
-  #         #  testruntitle: Linux
-  #       if: (${{ job.status }} != 'cancelled')
-  #     - name: Publish Test Artifact
-  #       uses: actions/upload-artifact@v2
-  #       with:
-  #         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
-  #         name: CodeCoverageLinux
+      - name: Publish Test Results
+        uses: actions/upload-artifact@v4
+        if: (${{ job.status }} != 'cancelled')
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
+          name: Linux
+      - name: Publish Test Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
+          name: CodeCoverageLinux
 
   Test_Stage_test_windows_core:
     name: Windows (PWSH)
@@ -96,21 +90,8 @@ jobs:
         uses: actions/upload-artifact@v4
         if: (${{ job.status }} != 'cancelled')
         with:
-          path: output/testResults
-          name: testResults
-# #      - # "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
-      # - name: Publish Test Results
-#         run: |
-#           & .\build.ps1 -tasks test
-#           echo "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
-#           #task: PublishTestResults@2
-#           #displayName: Publish Test Results
-#           #condition: succeededOrFailed()
-#           #inputs:
-#           #  testresultsformat: NUnit
-#           #  testresultsfiles: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
-#           #  testruntitle: Windows (PowerShell)
-#         if: (${{ job.status }} != 'cancelled')
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
+          name: Windows (PWSH)
       - name: Publish Test Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -169,23 +150,18 @@ jobs:
 #       shell: powershell
         run: |
           ./build.ps1 -Tasks test
-#     - # "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
-#       name: Publish Test Results
-#       run: |
-#         echo "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
-#         #task: PublishTestResults@2
-#         #displayName: Publish Test Results
-#         #condition: succeededOrFailed()
-#         #inputs:
-#         #  testresultsformat: NUnit
-#         #  testresultsfiles: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
-#         #  testruntitle: MacOS
-#       if: (${{ job.status }} != 'cancelled')
-#     - name: Publish Test Artifact
-#       uses: actions/upload-artifact@v2
-#       with:
-#         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
-#         name: CodeCoverageMacOS
+      - name: Publish Test Results
+        uses: actions/upload-artifact@v4
+        if: (${{ job.status }} != 'cancelled')
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
+          name: MacOS
+      - name: Publish Test Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
+          name: CodeCoverageMacOS
+
 # Test_Stage_Code_Coverage:
 #   name: Publish Code Coverage
 #   runs-on: ubuntu-latest
