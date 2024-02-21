@@ -80,9 +80,8 @@ jobs:
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
-          name: output
-          path: |
-            output
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
       - name: Run Tests
         run: |
           ./build.ps1 -Tasks test
@@ -144,10 +143,9 @@ jobs:
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
-          name: output
-          path: output
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
       - name: Run Tests
-#       shell: powershell
         run: |
           ./build.ps1 -Tasks test
       - name: Publish Test Results
@@ -183,8 +181,11 @@ jobs:
         with:
           name: ${{ env.buildArtifactName }}
           path: ${{ env.buildFolderName }}
-#     # - name: Download Test Artifact macOS
-#     #   uses: actions/download-artifact@v2
+      - name: Download Test Artifact macOS
+        uses: actions/download-artifact@v4
+        with:
+          name: 'CodeCoverageMacOS'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}
 #     # - name: Download Test Artifact Linux
 #     #   uses: actions/download-artifact@v2
 #     # - name: Download Test Artifact Windows (PS 5.1)
