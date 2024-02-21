@@ -37,9 +37,9 @@ jobs:
       - name: Publish Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ buildArtifactName }}
+          name: ${{ env.buildArtifactName }}
           path: |
-            ${{ buildFolderName }}
+            ${{ env.buildFolderName }}
 
   Test_Stage_test_linux:
     name: Linux
@@ -52,8 +52,8 @@ jobs:
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ buildArtifactName }}
-          path: ${{ buildFolderName }}
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
       - name: Run Tests
         run: |
           ./build.ps1 -Tasks test
@@ -181,8 +181,8 @@ jobs:
       - name: Download Pipeline Artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ buildArtifactName }}
-          path: ${{ buildFolderName }}
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
 #     # - name: Download Test Artifact macOS
 #     #   uses: actions/download-artifact@v2
 #     # - name: Download Test Artifact Linux
