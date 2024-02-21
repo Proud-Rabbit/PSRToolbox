@@ -95,7 +95,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
-          name: CodeCoverageWinPS7
+          name: CodeCoverageWinPWSH
 
   # Test_Stage_test_windows_ps:
   #   name: Windows (Windows PowerShell)
@@ -185,7 +185,18 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: 'CodeCoverageMacOS'
-          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/
+      - name: Download Test Artifact Windows (PWSH)
+        uses: actions/download-artifact@v4
+        with:
+          name: 'CodeCoverageWinPWSH'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPWSH/
+      - name: Download Test Artifact Linux
+        uses: actions/download-artifact@v4
+        with:
+          name: 'CodeCoverageLinux'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/
+
 #     # - name: Download Test Artifact Linux
 #     #   uses: actions/download-artifact@v2
 #     # - name: Download Test Artifact Windows (PS 5.1)
