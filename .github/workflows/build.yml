@@ -211,15 +211,15 @@ jobs:
       # - Test_Stage_test_windows_ps
       - Test_Stage_test_macos
       - Test_Stage_Code_Coverage
-    if: (success())
-    #  && ((github.ref == 'refs/heads/main') || startsWith(github.ref, 'refs/tags/')) && contains(variables['System.TeamFoundationCollectionUri'], 'Proud Rabbit'))
+    if: (success()) && ((github.ref == 'refs/heads/main'))
+    #  || startsWith(github.ref, 'refs/tags/')) && contains(variables['System.TeamFoundationCollectionUri'], 'Proud Rabbit'))
     steps:
       - uses: actions/checkout@main
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.buildArtifactName }}
-          paht: ${{ env.buildFolderName }}
+          path: ${{ env.buildFolderName }}
       - name: Publish Release
         env:
           GitHubToken: ${{ env.GitHubToken }}
