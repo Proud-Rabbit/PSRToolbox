@@ -37,9 +37,9 @@ jobs:
       - name: Publish Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: output
+          name: ${{ buildArtifactName }}
           path: |
-            output
+            ${{ buildFolderName }}
 
   Test_Stage_test_linux:
     name: Linux
@@ -52,8 +52,8 @@ jobs:
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
-          name: output
-          path: output
+          name: ${{ buildArtifactName }}
+          path: ${{ buildFolderName }}
       - name: Run Tests
         run: |
           ./build.ps1 -Tasks test
@@ -175,12 +175,14 @@ jobs:
       - uses: actions/checkout@main
       - name: Set Environment Variables
         run: |
-          Get-ChildItem env:* | Write-Host
           $repositoryOwner,$repositoryName = $env:GITHUB_REPOSITORY -split '/'
           echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
           echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
-#     - name: Download Pipeline Artifact
-#       uses: actions/download-artifact@v2
+      - name: Download Pipeline Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ buildArtifactName }}
+          path: ${{ buildFolderName }}
 #     # - name: Download Test Artifact macOS
 #     #   uses: actions/download-artifact@v2
 #     # - name: Download Test Artifact Linux
