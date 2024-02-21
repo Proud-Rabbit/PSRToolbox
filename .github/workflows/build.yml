@@ -94,10 +94,10 @@ jobs:
           ./build.ps1 -Tasks test
       - name: Publish Test Results
         uses: actions/upload-artifact@v4
+        if: (${{ job.status }} != 'cancelled')
         with:
           path: output/testResults
           name: testResults
-          # if: (${{ job.status }} != 'cancelled')
 # #      - # "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
       # - name: Publish Test Results
 #         run: |
