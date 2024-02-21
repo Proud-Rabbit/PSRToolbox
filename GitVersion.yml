@@ -20,7 +20,7 @@ branches:
     tag: fix
     increment: Patch
     regex: (hot)?fix(es)?[\/-]
-    source-branches: ['ProudRabbit']
+    source-branches: ['master']
 
 ignore:
   sha: []
@@ -37,3 +37,4 @@ merge-message-formats: {}
 #   increment: Patch
 #   regex: (hot)?fix(es)?[/-]
 #   source-branches: ['master']
+
