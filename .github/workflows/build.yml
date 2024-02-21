@@ -97,7 +97,7 @@ jobs:
         with:
           name: output
           path: output/testResults
-          if: (${{ job.status }} != 'cancelled')
+          # if: (${{ job.status }} != 'cancelled')
 # #      - # "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
       # - name: Publish Test Results
 #         run: |
