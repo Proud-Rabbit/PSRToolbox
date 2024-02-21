@@ -196,13 +196,10 @@ jobs:
         with:
           name: 'CodeCoverageLinux'
           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/
+      - name: 'Merge Code Coverage files'
+        run: |
+          ./build.ps1 -Tasks merge
 
-#     # - name: Download Test Artifact Linux
-#     #   uses: actions/download-artifact@v2
-#     # - name: Download Test Artifact Windows (PS 5.1)
-#     #   uses: actions/download-artifact@v2
-#     # - name: Download Test Artifact Windows (PS7)
-#     #   uses: actions/download-artifact@v2
 # Deploy_Stage_Deploy_Module:
 #   name: Deploy Module
 #   runs-on: ubuntu-latest
