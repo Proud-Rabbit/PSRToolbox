@@ -1,25 +1,17 @@
-#Error (line 56): the step 'PublishTestResults@2' does not have a conversion path yet
-#Error (line 59): the step 'PublishTestResults@2' does not have a conversion path yet
-#Error (line 84): the step 'PublishTestResults@2' does not have a conversion path yet
-#Error (line 87): the step 'PublishTestResults@2' does not have a conversion path yet
-name: Build Module
+name: Auto Build Module
 on:
-  - push
-  # pull_request_review:
-  #   types:
-  #     - submitted
-  #     - edited
+  push:
+    branches:
+      - ProudRabbit
+
+  pull_request_review:
+    types:
+      - submitted
+      - edited
+
 defaults:
   run:
     shell: pwsh
-    # branches:
-    # - main
-    # paths-ignore:
-    # - CHANGELOG.md
-    # tags:
-    # - v*
-    # tags-ignore:
-    # - '*-*'
 env:
   buildFolderName: output
   buildArtifactName: output
@@ -32,207 +24,219 @@ jobs:
     name: Package Module
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@main
-      - name: Calculate ModuleVersion (GitVersion)
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          fetch-depth: 0
+      - name: Setup GitVersion
         uses: gittools/actions/gitversion/setup@v0
         with:
-          versionSpec: '5.x'
-          #     run: |
-          # dotnet tool install --global GitVersion.Tool
-          # $gitVersionObject = dotnet-gitversion
-          # Write-Host -Object "$gitVersionObject"
-          #  | ConvertFrom-Json
-          # $gitVersionObject.PSObject.Properties.ForEach{
-          #     Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
-          #     Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
-          # }
-          # Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
-      - name: package
+          versionSpec: "5.x"
+      - name: Package
         run: |
-          # & .\build.ps1 -ResolveDependency
-          $gitVersionObject = dotnet-gitversion
-          # | ConvertFrom-Json
-          Write-Host -Object "gitVersionObject: $($gitVersionObject.Count)"
-          foreach ($line in $gitVersionObject) { Write-Host $line }
-          # $gitVersionObject.PSObject.Properties.ForEach{
-          #     Write-Host -Object "Setting Task Variable '$($_.Name)' with value '$($_.Value)'."
-          #     Write-Host -Object "##vso[task.setvariable variable=$($_.Name);]$($_.Value)"
-          # }
-          # Write-Host -Object "##vso[build.updatebuildnumber]$($gitVersionObject.FullSemVer)"
+          ./build.ps1 -ResolveDependency -Tasks pack
+      - name: Publish Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: |
+            ${{ env.buildFolderName }}
 
-          # & .\build.ps1 -ResolveDependency -tasks pack
+  Test_Stage_test_linux:
+    name: Linux
+    runs-on: ubuntu-latest
+    needs:
+      - Build_Stage_Package_Module
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+      - name: Run Tests
+        run: |
+          ./build.ps1 -Tasks test
+      - name: Publish Test Results
+        uses: actions/upload-artifact@v4
+        if: (${{ job.status }} != 'cancelled')
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
+          name: Linux
+      - name: Publish Test Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
+          name: CodeCoverageLinux
 
-      # - name: Build and Package Module
-      #   env:
-      #     ModuleVersion: ${{ env.NuGetVersionV2 }}
-      #   run: |
-      # - name: Publish Build Artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     path: ${{ env.buildFolderName }}/
-  # Test_Stage_test_linux:
-  #   name: Linux
-  #   runs-on: ubuntu-latest
-  #   needs:
-  #     - Build_Stage_Package_Module
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Download Build Artifact
-  #       uses: actions/download-artifact@v2
-  #     - name: Run Tests
-  #       shell: powershell
-  #     - # "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
-  #       name: Publish Test Results
-  #       run: |
-  #         echo "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
-  #         #task: PublishTestResults@2
-  #         #displayName: Publish Test Results
-  #         #condition: succeededOrFailed()
-  #         #inputs:
-  #         #  testresultsformat: NUnit
-  #         #  testresultsfiles: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
-  #         #  testruntitle: Linux
-  #       if: (${{ job.status }} != 'cancelled')
-  #     - name: Publish Test Artifact
-  #       uses: actions/upload-artifact@v2
-  #       with:
-  #         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
-  #         name: CodeCoverageLinux
-#   Test_Stage_test_windows_core:
-#     name: Windows (PowerShell)
-#     runs-on: windows-latest
-#     needs:
-#       - Build_Stage_Package_Module
-#     steps:
-#       - uses: actions/checkout@main
-#       - name: Download Build Artifact
-#         uses: actions/download-artifact@v4
-#       - name: Run Tests
-#         run: |
-#           & .\build.ps1 -tasks test
-# #      - # "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
-#         name: Publish Test Results
-#         run: |
-#           & .\build.ps1 -tasks test
-#           echo "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
-#           #task: PublishTestResults@2
-#           #displayName: Publish Test Results
-#           #condition: succeededOrFailed()
-#           #inputs:
-#           #  testresultsformat: NUnit
-#           #  testresultsfiles: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
-#           #  testruntitle: Windows (PowerShell)
-#         if: (${{ job.status }} != 'cancelled')
-#       - name: Publish Test Artifact
-#         uses: actions/upload-artifact@v4
-#         with:
-#           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
-#           name: CodeCoverageWinPS7
-  # Test_Stage_test_windows_ps:
-  #   name: Windows (Windows PowerShell)
-  #   runs-on: windows-latest
-  #   needs:
-  #     - Build_Stage_Package_Module
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Download Build Artifact
-  #       uses: actions/download-artifact@v2
-  #     - name: Run Tests
-  #       shell: powershell
-  #     - # "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
-  #       name: Publish Test Results
-  #       run: |
-  #         echo "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
-  #         #task: PublishTestResults@2
-  #         #displayName: Publish Test Results
-  #         #condition: succeededOrFailed()
-  #         #inputs:
-  #         #  testresultsformat: NUnit
-  #         #  testresultsfiles: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
-  #         #  testruntitle: Windows (Windows PowerShell)
-  #       if: (${{ job.status }} != 'cancelled')
-  #     - name: Publish Test Artifact
-  #       uses: actions/upload-artifact@v2
-  #       with:
-  #         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
-  #         name: CodeCoverageWinPS51
-  # Test_Stage_test_macos:
-  #   name: macOS
-  #   runs-on: macos-latest
-  #   needs:
-  #     - Build_Stage_Package_Module
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Download Build Artifact
-  #       uses: actions/download-artifact@v2
-  #     - name: Run Tests
-  #       shell: powershell
-  #     - # "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
-  #       name: Publish Test Results
-  #       run: |
-  #         echo "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
-  #         #task: PublishTestResults@2
-  #         #displayName: Publish Test Results
-  #         #condition: succeededOrFailed()
-  #         #inputs:
-  #         #  testresultsformat: NUnit
-  #         #  testresultsfiles: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
-  #         #  testruntitle: MacOS
-  #       if: (${{ job.status }} != 'cancelled')
-  #     - name: Publish Test Artifact
-  #       uses: actions/upload-artifact@v2
-  #       with:
-  #         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
-  #         name: CodeCoverageMacOS
-  # Test_Stage_Code_Coverage:
-  #   name: Publish Code Coverage
-  #   runs-on: ubuntu-latest
-  #   needs:
-  #     - Build_Stage_Package_Module
-  #     # - Test_Stage_test_macos
-  #     # - Test_Stage_test_linux
-  #     # - Test_Stage_test_windows_core
-  #     # - Test_Stage_test_windows_ps
-  #   steps:
-  #     - uses: actions/checkout@main
-  #     - name: Set Environment Variables
-  #       run: |
-  #         $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
-  #         echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
-  #         echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
-  #       shell: pwsh
-  #     - name: Download Pipeline Artifact
-  #       uses: actions/download-artifact@v2
-  #     # - name: Download Test Artifact macOS
-  #     #   uses: actions/download-artifact@v2
-  #     # - name: Download Test Artifact Linux
-  #     #   uses: actions/download-artifact@v2
-  #     # - name: Download Test Artifact Windows (PS 5.1)
-  #     #   uses: actions/download-artifact@v2
-  #     # - name: Download Test Artifact Windows (PS7)
-  #     #   uses: actions/download-artifact@v2
-  # Deploy_Stage_Deploy_Module:
-  #   name: Deploy Module
-  #   runs-on: ubuntu-latest
-  #   needs:
-  #     # - Test_Stage_test_linux
-  #     # - Test_Stage_test_windows_core
-  #     # - Test_Stage_test_windows_ps
-  #     # - Test_Stage_test_macos
-  #     - Test_Stage_Code_Coverage
-  #   if: (success() && ((github.ref == 'refs/heads/main') || startsWith(github.ref, 'refs/tags/')) && contains(variables['System.TeamFoundationCollectionUri'], 'Proud Rabbit'))
-  #   steps:
-  #     - uses: actions/checkout@main
-  #     - name: Download Build Artifact
-  #       uses: actions/download-artifact@v2
-  #     - name: Publish Release
-  #       env:
-  #         GitHubToken: ${{ env.GitHubToken }}
-  #         GalleryApiToken: ${{ env.GalleryApiToken }}
-  #         ReleaseBranch: ${{ env.defaultBranch }}
-  #         MainGitBranch: ${{ env.defaultBranch }}
-  #     - name: Send Changelog PR
-  #       env:
-  #         GitHubToken: ${{ env.GitHubToken }}
-  #         ReleaseBranch: ${{ env.defaultBranch }}
-  #         MainGitBranch: ${{ env.defaultBranch }}
+  Test_Stage_test_windows_core:
+    name: Windows (PWSH)
+    runs-on: windows-latest
+    needs:
+      - Build_Stage_Package_Module
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+      - name: Run Tests
+        run: |
+          ./build.ps1 -Tasks test
+      - name: Publish Test Results
+        uses: actions/upload-artifact@v4
+        if: (${{ job.status }} != 'cancelled')
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
+          name: Windows (PWSH)
+      - name: Publish Test Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
+          name: CodeCoverageWinPWSH
+
+  Test_Stage_test_windows_ps:
+    name: Windows (Windows PowerShell)
+    runs-on: windows-latest
+    needs:
+      - Build_Stage_Package_Module
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+      - name: Run Tests
+        shell: powershell
+        run: |
+          .\build.ps1 -Tasks test
+      - name: Publish Test Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
+          name: CodeCoverageWinPS51
+
+#     - # "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
+#       name: Publish Test Results
+#       run: |
+#         echo "Error: the step 'PublishTestResults@2' does not have a conversion path yet"
+#         #task: PublishTestResults@2
+#         #displayName: Publish Test Results
+#         #condition: succeededOrFailed()
+#         #inputs:
+#         #  testresultsformat: NUnit
+#         #  testresultsfiles: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
+#         #  testruntitle: Windows (Windows PowerShell)
+#       if: (${{ job.status }} != 'cancelled')
+#     - name: Publish Test Artifact
+#       uses: actions/upload-artifact@v2
+#       with:
+#         path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
+#         name: CodeCoverageWinPS51
+
+  Test_Stage_test_macos:
+    name: macOS
+    runs-on: macos-latest
+    needs:
+      - Build_Stage_Package_Module
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+      - name: Run Tests
+        run: |
+          ./build.ps1 -Tasks test
+      - name: Publish Test Results
+        uses: actions/upload-artifact@v4
+        if: (${{ job.status }} != 'cancelled')
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
+          name: MacOS
+      - name: Publish Test Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
+          name: CodeCoverageMacOS
+
+  Test_Stage_Code_Coverage:
+    name: Publish Code Coverage
+    runs-on: ubuntu-latest
+    needs:
+      - Build_Stage_Package_Module
+      - Test_Stage_test_macos
+      - Test_Stage_test_linux
+      - Test_Stage_test_windows_core
+      - Test_Stage_test_windows_ps
+    steps:
+      - uses: actions/checkout@main
+      - name: Set Environment Variables
+        run: |
+          $repositoryOwner,$repositoryName = $env:GITHUB_REPOSITORY -split '/'
+          echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
+          echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
+      - name: Download Pipeline Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+      - name: Download Test Artifact macOS
+        uses: actions/download-artifact@v4
+        with:
+          name: 'CodeCoverageMacOS'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/
+      - name: Download Test Artifact Windows (PWSH)
+        uses: actions/download-artifact@v4
+        with:
+          name: 'CodeCoverageWinPWSH'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPWSH/
+      - name: Download Test Artifact Linux
+        uses: actions/download-artifact@v4
+        with:
+          name: 'CodeCoverageLinux'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/
+      - name: 'Merge Code Coverage files'
+        run: |
+          ./build.ps1 -Tasks merge
+      # -name: 'Publish GitHub Code Coverage'
+
+
+  Deploy_Stage_Deploy_Module:
+    name: Deploy Module
+    runs-on: ubuntu-latest
+    needs:
+      - Test_Stage_test_linux
+      - Test_Stage_test_windows_core
+      - Test_Stage_test_windows_ps
+      - Test_Stage_test_macos
+      - Test_Stage_Code_Coverage
+    if: (success()) && ((github.ref == 'refs/heads/main') || startsWith(github.ref, 'refs/tags/'))
+    # && contains(variables['System.TeamFoundationCollectionUri'], 'Proud Rabbit'))
+    steps:
+      - uses: actions/checkout@main
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+      - name: Publish Release
+        env:
+          GitHubToken: ${{ env.GitHubToken }}
+          GalleryApiToken: ${{ env.GalleryApiToken }}
+          ReleaseBranch: ${{ env.defaultBranch }}
+          MainGitBranch: ${{ env.defaultBranch }}
+        run: ./build.ps1 -Tasks publish
+      - name: Send Changelog PR
+        env:
+          GitHubToken: ${{ env.GitHubToken }}
+          ReleaseBranch: ${{ env.defaultBranch }}
+          MainGitBranch: ${{ env.defaultBranch }}
+        run: ./build.ps1 -Tasks Create_ChangeLog_GitHub_PR

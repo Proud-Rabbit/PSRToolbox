@@ -1,4 +1,4 @@
-BeforeAll {
+﻿BeforeAll {
     $script:dscModuleName = 'PSRToolkit'
 
     Import-Module -Name $script:dscModuleName
