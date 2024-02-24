@@ -45,7 +45,7 @@ function ConvertFrom-PSRDiacritic
         }
 
         # Convert other characters that doesn't have NonSpacingMarks
-        $StrConv = $sb.ToString().Replace([String][char]0x00c6, 'Ae').Replace([String][char]0x00de, 'B').Replace([String][char]0x00d0, 'Dj').Replace([String][char]0x00d8, 'O').Replace([String][char]0x0152, 'Oe').Replace([String][char]0x00e6, 'ae').Replace([String][char]0x00fe, 'b').Replace([String][char]0x0192, 'f').Replace('ð', 'o').Replace('ø', 'o').Replace('œ', 'oe').Replace('ß', 'ss')
+        $StrConv = $sb.ToString().Replace([String][char]0x00c6, 'Ae').Replace([String][char]0x00de, 'B').Replace([String][char]0x00d0, 'Dj').Replace([String][char]0x00d8, 'O').Replace([String][char]0x0152, 'Oe').Replace([String][char]0x00e6, 'ae').Replace([String][char]0x00fe, 'b').Replace([String][char]0x0192, 'f').Replace([String][char]0x00f0, 'o').Replace([String][char]0x00f8, 'o').Replace([String][char]0x0153, 'oe').Replace([String][char]0x00df, 'ss')
         return $StrConv.Normalize([System.Text.NormalizationForm]::FormC)
     }
 }
