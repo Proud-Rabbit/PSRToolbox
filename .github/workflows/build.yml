@@ -4,10 +4,11 @@ on:
     branches:
       - ProudRabbit
 
-  # pull_request_review:
-  #   types:
-  #     - submitted
-  #     - edited
+  pull_request_review:
+    types:
+      - submitted
+      - edited
+
 defaults:
   run:
     shell: pwsh
