@@ -6,10 +6,10 @@ on:
       - ProudRabbit
     paths-ignore:
       - CHANGELOG.md
-      - .github/**
-    tags:
-      - '**'
-      - '!*preview*'
+      # - .github/**
+    # tags:
+    #   - '**'
+    #   - '!*preview*'
 
 defaults:
   run:
