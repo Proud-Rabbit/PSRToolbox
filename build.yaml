@@ -154,3 +154,13 @@ TaskHeader: |
   Write-Build DarkGray "  $Path"
   Write-Build DarkGray "  $($Task.InvocationInfo.ScriptName):$($Task.InvocationInfo.ScriptLineNumber)"
   ""
+
+####################################################
+#       GitHub  Configuration                      #
+####################################################
+GitHubConfig:
+  GitHubFilesToAdd:
+  - 'CHANGELOG.md'
+  GitHubConfigUserName: Proud-Rabbit
+  GitHubConfigUserEmail: proud.s.rabbit@gmail.com
+  UpdateChangelogOnPrerelease: true
