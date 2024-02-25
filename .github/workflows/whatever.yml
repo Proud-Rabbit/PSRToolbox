@@ -11,6 +11,10 @@ on:
   #   branches:
   #     - main
 
+defaults:
+  run:
+    shell: pwsh
+
 jobs:
   thejob:
     # if: "github.event.pull_request.merged == true"
