@@ -256,36 +256,74 @@ jobs:
       #   with:
       #     nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPWSH/NUnit*.xml
       #     check_name: WinPWSH Test Result
-      - name: Set Linux badge color
-        shell: bash
-        run: |
-          case ${{ fromJSON( steps.linux-test-results.outputs.json ).conclusion }} in
-            success)
-              echo "LINUXBADGE_COLOR=31c653" >> $GITHUB_ENV
-              ;;
-            failure)
-              echo "LINUXBADGE_COLOR=800000" >> $GITHUB_ENV
-              ;;
-            neutral)
-              echo "LINUXBADGE_COLOR=696969" >> $GITHUB_ENV
-              ;;
-            esac
-      - name: Create Linux badge
-        uses: emibcn/badge-action@v1.2.1
-        with:
-          label: Tests
-          status: '${{ fromJSON( steps.linuc-test-results.output.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.linuc-test-results.output.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.linuc-test-results.output.json ).conclusion }}'
-          color: ${{ env.LINUXBADGE_COLOR }}
-          path: linux-badge.svg
-      - name: Upload Linux badge to Gist
-        if: >
-          github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' || github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
-        uses: andymckay/append-gist-action@0.2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          gistURL: https://gist.githubusercontent.com/
-          file: linux-badge.svg
+      # - name: Set Linux badge color
+      #   shell: bash
+      #   run: |
+      #     case ${{ fromJSON( steps.linux-test-results.outputs.json ).conclusion }} in
+      #       success)
+      #         echo "LINUXBADGE_COLOR=31c653" >> $GITHUB_ENV
+      #         ;;
+      #       failure)
+      #         echo "LINUXBADGE_COLOR=800000" >> $GITHUB_ENV
+      #         ;;
+      #       neutral)
+      #         echo "LINUXBADGE_COLOR=696969" >> $GITHUB_ENV
+      #         ;;
+      #       esac
+      # - name: Create Linux badge
+      #   uses: emibcn/badge-action@v1.2.1
+      #   with:
+      #     label: Tests
+      #     status: '${{ fromJSON( steps.linuc-test-results.output.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.linuc-test-results.output.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.linuc-test-results.output.json ).conclusion }}'
+      #     color: ${{ env.LINUXBADGE_COLOR }}
+      #     path: linux-badge.svg
+      # - name: Upload Linux badge to Gist
+      #   if: >
+      #     github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' || github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+      #   uses: andymckay/append-gist-action@0.2
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     gistURL: https://gist.githubusercontent.com/
+      #     file: linux-badge.svg
       - name: 'Merge Code Coverage files'
         run: |
           ./build.ps1 -Tasks merge
       # -name: 'Publish GitHub Code Coverage'
+
+  Deploy_Stage_Deploy_Module:
+    name: Deploy Module
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    # if: "github.event.pull_request.merged == true"
+    if: success() && (github.ref == 'refs/heads/main')
+    needs:
+      - Test_Stage_test_linux
+      - Test_Stage_test_windows_core
+      - Test_Stage_test_windows_ps
+      - Test_Stage_test_macos
+      - Test_Stage_Code_Coverage
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+      - name: Publish Release
+        env:
+          GitHubToken: ${{ secrets.GITHUB_TOKEN }} #${{ env.GitHubToken }}
+          # GalleryApiToken: ${{ env.GalleryApiToken }}
+          ReleaseBranch: ${{ env.defaultBranch }}
+          MainGitBranch: ${{ env.defaultBranch }}
+        run: ./build.ps1 -Tasks publish
+      - name: Send Changelog PR
+        env:
+          GitHubToken: ${{ secrets.GITHUB_TOKEN }} #${{ env.GitHubToken }}
+          ReleaseBranch: ${{ env.defaultBranch }}
+          MainGitBranch: ${{ env.defaultBranch }}
+        run: ./build.ps1 -Tasks Create_ChangeLog_GitHub_PR
