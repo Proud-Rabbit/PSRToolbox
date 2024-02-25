@@ -17,8 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Run"
-        # env:
-        #   GitHubToken: ${{ secrets.GitHubToken }}
+        env:
+          GitHubToken: ${{ secrets.GITHUBTOKEN }}
         run: |
           echo "This will only show if the PR has been merged (and not if it was closed without merging)."
           echo '${{ toJSON(github) }}'
