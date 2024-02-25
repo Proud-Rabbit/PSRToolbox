@@ -151,7 +151,7 @@ jobs:
 #         name: CodeCoverageWinPS51
 
   Test_Stage_test_macos:
-    name: macOS
+    name: MacOS
     runs-on: macos-latest
     needs:
       - Build_Stage_Package_Module
@@ -199,7 +199,7 @@ jobs:
         with:
           name: ${{ env.buildArtifactName }}
           path: ${{ env.buildFolderName }}
-      - name: Download Test Artifact macOS
+      - name: Download Test Artifact MacOS
         uses: actions/download-artifact@v4
         with:
           name: 'CodeCoverageMacOS'
