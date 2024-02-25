@@ -225,6 +225,8 @@ jobs:
   Deploy_Stage_Deploy_Module:
     name: Deploy Module
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     if: "github.event.pull_request.merged == true"
     needs:
       - Test_Stage_test_linux
