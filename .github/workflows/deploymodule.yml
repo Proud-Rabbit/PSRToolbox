@@ -186,3 +186,56 @@ jobs:
         with:
           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
           name: CodeCoverageMacOS
+
+  Test_Stage_Code_Coverage:
+    name: Publish Code Coverage
+    if: success() || failure()
+    runs-on: ubuntu-latest
+    needs:
+      - Build_Stage_Package_Module
+      - Test_Stage_test_macos
+      - Test_Stage_test_linux
+      - Test_Stage_test_windows_core
+      - Test_Stage_test_windows_ps
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Set Environment Variables
+        run: |
+          $repositoryOwner,$repositoryName = $env:GITHUB_REPOSITORY -split '/'
+          echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
+          echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
+      - name: Download Pipeline Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+      - name: Download Test Artifact MacOS
+        uses: actions/download-artifact@v4
+        with:
+          name: 'CodeCoverageMacOS'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/
+      - name: Download Test Artifact Windows (PWSH)
+        uses: actions/download-artifact@v4
+        with:
+          name: 'CodeCoverageWinPWSH'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPWSH/
+      - name: Download Test Artifact Linux
+        uses: actions/download-artifact@v4
+        with:
+          name: 'CodeCoverageLinux'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/
+      - name: Publish Linux Test Results
+        id: linux-test-results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          numit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/NUnit*.xml
+          check_name: Linux Test Result
+      - name: 'Merge Code Coverage files'
+        run: |
+          ./build.ps1 -Tasks merge
+      # -name: 'Publish GitHub Code Coverage'
