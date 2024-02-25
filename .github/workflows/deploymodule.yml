@@ -228,13 +228,63 @@ jobs:
         with:
           name: 'CodeCoverageLinux'
           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/
-      - name: Publish Linux Test Results
-        id: linux-test-results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
+      # - name: Publish MacOS Test Results
+      #   id: macos-test-results
+      #   uses: EnricoMi/publish-unit-test-result-action@v2
+      #   if: always()
+      #   with:
+      #     nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/NUnit*.xml
+      #     check_name: MacOS Test Result
+      # - name: Publish Linux Test Results
+      #   id: linux-test-results
+      #   uses: EnricoMi/publish-unit-test-result-action@v2
+      #   if: always()
+      #   with:
+      #     nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/NUnit*.xml
+      #     check_name: Linux Test Result
+      # - name: Publish WinPS51 Test Results
+      #   id: winps51-test-results
+      #   uses: EnricoMi/publish-unit-test-result-action@v2
+      #   if: always()
+      #   with:
+      #     nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPS51/NUnit*.xml
+      #     check_name: WinPS51 Test Result
+      # - name: Publish WinPWSH Test Results
+      #   id: winps51-test-results
+      #   uses: EnricoMi/publish-unit-test-result-action@v2
+      #   if: always()
+      #   with:
+      #     nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPWSH/NUnit*.xml
+      #     check_name: WinPWSH Test Result
+      - name: Set Linux badge color
+        shell: bash
+        run: |
+          case ${{ fromJSON( steps.linux-test-results.outputs.json ).conclusion }} in
+            success)
+              echo "LINUXBADGE_COLOR=31c653" >> $GITHUB_ENV
+              ;;
+            failure)
+              echo "LINUXBADGE_COLOR=800000" >> $GITHUB_ENV
+              ;;
+            neutral)
+              echo "LINUXBADGE_COLOR=696969" >> $GITHUB_ENV
+              ;;
+            esac
+      - name: Create Linux badge
+        uses: emibcn/badge-action@v1.2.1
         with:
-          nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/NUnit*.xml
-          check_name: Linux Test Result
+          label: Tests
+          status: '${{ fromJSON( steps.linuc-test-results.output.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.linuc-test-results.output.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.linuc-test-results.output.json ).conclusion }}'
+          color: ${{ env.LINUXBADGE_COLOR }}
+          path: linux-badge.svg
+      - name: Upload Linux badge to Gist
+        if: >
+          github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' || github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+        uses: andymckay/append-gist-action@1fbfbbce708a39bd45846f0955ed5521f209c6d
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          gistURL: https://gist.githubusercontent.com/
+          file: linux-badge.svg
       - name: 'Merge Code Coverage files'
         run: |
           ./build.ps1 -Tasks merge
