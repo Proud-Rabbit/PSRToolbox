@@ -1,14 +1,17 @@
 name: Auto Build Module
 on:
-  push:
-    branches:
-      - ProudRabbit
+  # push:
+  #   branches:
+  #     - ProudRabbit
 
-  pull_request:
-    branches:
-      - main
-    types:
-      - closed
+  # pull_request:
+  #   branches:
+  #     - main
+  #   types:
+  #     - closed
+
+  workflow_dispatch:
+
   # pull_request_review:
   #   types:
   #     - submitted

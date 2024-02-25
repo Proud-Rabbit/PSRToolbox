@@ -12,4 +12,7 @@ jobs:
     if: "github.event.pull_request.merged == true"
     runs-on: ubuntu-latest
     steps:
-      - run: echo "This will only show if the PR has been merged (and not if it was closed without merging)."
+      - name: "Run"
+        env:
+          GithubToken: ${{secrets.GitHubToken}}
+        run: echo "This will only show if the PR has been merged (and not if it was closed without merging).[${{env:GithubToken}}]"
