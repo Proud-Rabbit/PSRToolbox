@@ -4,10 +4,12 @@ on:
     branches:
       - ProudRabbit
 
-  pull_request_review:
-    types:
-      - submitted
-      - edited
+  workflow_dispatch:
+
+  # pull_request_review:
+  #   types:
+  #     - submitted
+  #     - edited
 
 defaults:
   run:
