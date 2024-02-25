@@ -6,7 +6,7 @@ on:
       # - ProudRabbit
     paths-ignore:
       - CHANGELOG.md
-      # - .github/**
+      - .github/**
     tags:
       - '**'
       - '!*preview*'
