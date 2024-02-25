@@ -2,8 +2,8 @@ name: Build PSConf2023
 on:
   push:
     branches:
-      # - main
-      - ProudRabbit
+      - main
+      # - ProudRabbit
     paths-ignore:
       - CHANGELOG.md
       # - .github/**
