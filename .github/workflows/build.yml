@@ -20,6 +20,7 @@ on:
 defaults:
   run:
     shell: pwsh
+
 env:
   buildFolderName: output
   buildArtifactName: output
