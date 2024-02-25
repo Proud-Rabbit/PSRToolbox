@@ -21,5 +21,4 @@ jobs:
         #   GitHubToken: ${{ secrets.GitHubToken }}
         run: |
           echo "This will only show if the PR has been merged (and not if it was closed without merging)."
-          echo ${{ secrets:GITHUB_TOKEN }}
           echo '${{ toJSON(github) }}'
