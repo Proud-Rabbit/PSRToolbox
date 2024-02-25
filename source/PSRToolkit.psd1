@@ -110,7 +110,7 @@
             ReleaseNotes = ''
 
             # Prerelease string of this module
-            Prerelease   = 'alpha'
+            Prerelease   = ''
 
             # Flag to indicate whether the module requires explicit user acceptance for install/update/save
             # RequireLicenseAcceptance = $false
