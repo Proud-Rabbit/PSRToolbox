@@ -4,11 +4,11 @@ on:
   #   branches:
   #     - ProudRabbit
 
-  pull_request:
-    branches:
-      - main
-    types:
-      - closed
+  # pull_request:
+  #   branches:
+  #     - main
+  #   types:
+  #     - closed
 
   workflow_dispatch:
 
