@@ -1,0 +1,329 @@
+name: Build PSConf2023
+on:
+  push:
+    branches:
+      # - main
+      - ProudRabbit
+    paths-ignore:
+      - CHANGELOG.md
+      # - .github/**
+    # tags:
+    #   - '**'
+    #   - '!*preview*'
+
+defaults:
+  run:
+    shell: pwsh
+
+env:
+  buildFolderName: output
+  buildArtifactName: output
+  testResultFolderName: testResults
+  defaultBranch: main
+
+jobs:
+  Build_Stage_Package_Module:
+    name: Package Module
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Setup GitVersion
+        uses: gittools/actions/gitversion/setup@v0
+        with:
+          versionSpec: "5.x"
+      - name: Evaluate Next Version
+        uses: gittools/actions/gitversion/execute@v0
+        with:
+          configFilePath: GitVersion.yml
+      - name: Builde & Package Module
+        env:
+          ModuleVersion: ${{ env.gitVersion.NuGetVersionV2 }}
+        run: |
+          ./build.ps1 -ResolveDependency -Tasks pack -Verbose
+      - name: Publish Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+
+  Test_Stage_test_linux:
+    name: Linux
+    runs-on: ubuntu-latest
+    needs:
+      - Build_Stage_Package_Module
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+      - name: Run Tests
+        run: |
+          ./build.ps1 -Tasks test
+      - name: Publish Test Results
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        # if: (${{ job.status }} != 'cancelled')
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
+          name: Linux
+      - name: Publish Test Artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        # if: (${{ job.status }} != 'cancelled')
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
+          name: CodeCoverageLinux
+
+  Test_Stage_test_windows_core:
+    name: Windows (PWSH)
+    runs-on: windows-latest
+    needs:
+      - Build_Stage_Package_Module
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+      - name: Run Tests
+        run: |
+          ./build.ps1 -Tasks test
+      - name: Publish Test Results
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        # if: (${{ job.status }} != 'cancelled')
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
+          name: Windows (PWSH)
+      - name: Publish Test Artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        # if: (${{ job.status }} != 'cancelled')
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
+          name: CodeCoverageWinPWSH
+
+  Test_Stage_test_windows_ps:
+    name: Windows (Windows PowerShell)
+    runs-on: windows-latest
+    needs:
+      - Build_Stage_Package_Module
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+      - name: Run Tests
+        shell: powershell
+        run: |
+          .\build.ps1 -Tasks test
+      - name: Publish Test Results
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        # if: (${{ job.status }} != 'cancelled')
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
+          name: Windows (Windows PowerShell)
+      - name: Publish Test Artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        # if: (${{ job.status }} != 'cancelled')
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
+          name: CodeCoverageWinPS51
+
+  Test_Stage_test_macos:
+    name: MacOS
+    runs-on: macos-latest
+    needs:
+      - Build_Stage_Package_Module
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+      - name: Run Tests
+        run: |
+          ./build.ps1 -Tasks test
+      - name: Publish Test Results
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        # if: (${{ job.status }} != 'cancelled')
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
+          name: MacOS
+      - name: Publish Test Artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        # if: (${{ job.status }} != 'cancelled')
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
+          name: CodeCoverageMacOS
+
+  Test_Stage_Code_Coverage:
+    name: Publish Code Coverage
+    if: success() || failure()
+    runs-on: ubuntu-latest
+    needs:
+      - Build_Stage_Package_Module
+      # - Test_Stage_test_macos
+      - Test_Stage_test_linux
+      # - Test_Stage_test_windows_core
+      # - Test_Stage_test_windows_ps
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Set Environment Variables
+        run: |
+          $repositoryOwner,$repositoryName = $env:GITHUB_REPOSITORY -split '/'
+          echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
+          echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
+      - name: Download Pipeline Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+      - name: Download Test Artifact MacOS
+        uses: actions/download-artifact@v4
+        with:
+          name: 'CodeCoverageMacOS'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/
+      - name: Download Test Artifact Windows (PWSH)
+        uses: actions/download-artifact@v4
+        with:
+          name: 'CodeCoverageWinPWSH'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPWSH/
+      - name: Download Test Artifact Linux
+        uses: actions/download-artifact@v4
+        with:
+          name: 'CodeCoverageLinux'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/
+      # - name: Publish MacOS Test Results
+      #   id: macos-test-results
+      #   uses: EnricoMi/publish-unit-test-result-action@v2
+      #   if: always()
+      #   with:
+      #     nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/NUnit*.xml
+      #     check_name: MacOS Test Result
+      # - name: Publish Linux Test Results
+      #   id: linux-test-results
+      #   uses: EnricoMi/publish-unit-test-result-action@v2
+      #   if: always()
+      #   with:
+      #     nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/NUnit*.xml
+      #     check_name: Linux Test Result
+      # - name: Publish WinPS51 Test Results
+      #   id: winps51-test-results
+      #   uses: EnricoMi/publish-unit-test-result-action@v2
+      #   if: always()
+      #   with:
+      #     nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPS51/NUnit*.xml
+      #     check_name: WinPS51 Test Result
+      # - name: Publish WinPWSH Test Results
+      #   id: winps51-test-results
+      #   uses: EnricoMi/publish-unit-test-result-action@v2
+      #   if: always()
+      #   with:
+      #     nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPWSH/NUnit*.xml
+      #     check_name: WinPWSH Test Result
+      # - name: Set Linux badge color
+      #   shell: bash
+      #   run: |
+      #     case ${{ fromJSON( steps.linux-test-results.outputs.json ).conclusion }} in
+      #       success)
+      #         echo "LINUXBADGE_COLOR=31c653" >> $GITHUB_ENV
+      #         ;;
+      #       failure)
+      #         echo "LINUXBADGE_COLOR=800000" >> $GITHUB_ENV
+      #         ;;
+      #       neutral)
+      #         echo "LINUXBADGE_COLOR=696969" >> $GITHUB_ENV
+      #         ;;
+      #       esac
+      # - name: Create Linux badge
+      #   uses: emibcn/badge-action@v1.2.1
+      #   with:
+      #     label: Tests
+      #     status: '${{ fromJSON( steps.linuc-test-results.output.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.linuc-test-results.output.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.linuc-test-results.output.json ).conclusion }}'
+      #     color: ${{ env.LINUXBADGE_COLOR }}
+      #     path: linux-badge.svg
+      # - name: Upload Linux badge to Gist
+      #   if: >
+      #     github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' || github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+      #   uses: andymckay/append-gist-action@0.2
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     gistURL: https://gist.githubusercontent.com/
+      #     file: linux-badge.svg
+      - name: 'Merge Code Coverage files'
+        run: |
+          ./build.ps1 -Tasks merge
+      # -name: 'Publish GitHub Code Coverage'
+
+  Deploy_Stage_Deploy_Module:
+    name: Deploy Module
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    # if: "github.event.pull_request.merged == true"
+    if: success() && (github.ref == 'refs/heads/main')
+    needs:
+      - Test_Stage_test_linux
+      - Test_Stage_test_windows_core
+      - Test_Stage_test_windows_ps
+      - Test_Stage_test_macos
+      - Test_Stage_Code_Coverage
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+      - name: Publish Release
+        env:
+          GitHubToken: ${{ secrets.GITHUB_TOKEN }} #${{ env.GitHubToken }}
+          # GalleryApiToken: ${{ env.GalleryApiToken }}
+          ReleaseBranch: ${{ env.defaultBranch }}
+          MainGitBranch: ${{ env.defaultBranch }}
+        run: ./build.ps1 -Tasks publish
+      - name: Send Changelog PR
+        env:
+          GitHubToken: ${{ secrets.GITHUB_TOKEN }} #${{ env.GitHubToken }}
+          ReleaseBranch: ${{ env.defaultBranch }}
+          MainGitBranch: ${{ env.defaultBranch }}
+        run: ./build.ps1 -Tasks Create_ChangeLog_GitHub_PR
