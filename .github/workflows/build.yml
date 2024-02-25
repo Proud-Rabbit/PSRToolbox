@@ -4,13 +4,13 @@ on:
   #   branches:
   #     - ProudRabbit
 
-  # pull_request:
-  #   branches:
-  #     - main
-  #   types:
-  #     - closed
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
 
-  workflow_dispatch:
+  # workflow_dispatch:
 
   # pull_request_review:
   #   types:
@@ -243,7 +243,7 @@ jobs:
           path: ${{ env.buildFolderName }}
       - name: Publish Release
         env:
-          GitHubToken: ${{ secrets.GitHubToken }} #${{ env.GitHubToken }}
+          GitHubToken: ${{ secrets.GITHUBTOKEN }} #${{ env.GitHubToken }}
           GalleryApiToken: ${{ env.GalleryApiToken }}
           ReleaseBranch: ${{ env.defaultBranch }}
           MainGitBranch: ${{ env.defaultBranch }}
