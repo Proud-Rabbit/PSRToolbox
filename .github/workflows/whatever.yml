@@ -14,5 +14,5 @@ jobs:
     steps:
       - name: "Run"
         env:
-          GithubToken: ${{secrets.GitHubToken}}
+          GitHubToken: ${{ secrets.GitHubToken }}
         run: echo "This will only show if the PR has been merged (and not if it was closed without merging).[${{env:GithubToken}}]"
