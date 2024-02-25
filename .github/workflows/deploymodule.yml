@@ -36,7 +36,7 @@ jobs:
         with:
           versionSpec: "5.x"
       - name: Evaluate Next Version
-        uses: gittools/actions/gitversion/setup@v0
+        uses: gittools/actions/gitversion/execute@v0
         with:
           configFilePath: GitVersion.yml
       - name: Builde & Package Module
