@@ -7,9 +7,9 @@ on:
     paths-ignore:
       - CHANGELOG.md
       # - .github/**
-    # tags:
-    #   - '**'
-    #   - '!*preview*'
+    tags:
+      - '**'
+      - '!*preview*'
 
 defaults:
   run:
