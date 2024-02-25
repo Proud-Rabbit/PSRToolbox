@@ -252,7 +252,7 @@ jobs:
         run: ./build.ps1 -Tasks publish
       - name: Send Changelog PR
         env:
-          GitHubToken: ${{ env.GitHubToken }}
+          GitHubToken: ${{ secrets.GITHUB_TOKEN }} #${{ env.GitHubToken }}
           ReleaseBranch: ${{ env.defaultBranch }}
           MainGitBranch: ${{ env.defaultBranch }}
         run: ./build.ps1 -Tasks Create_ChangeLog_GitHub_PR
