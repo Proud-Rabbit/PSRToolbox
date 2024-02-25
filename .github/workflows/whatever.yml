@@ -2,20 +2,24 @@ name: Do something on merge into main
 
 # Trigger when a pull request into main branch is closed, which can happen either on merge or manual close...
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
-      - main
+      - ProudRabbit
+
+  # pull_request:
+  #   types: [closed]
+  #   branches:
+  #     - main
 
 jobs:
   thejob:
-    if: "github.event.pull_request.merged == true"
+    # if: "github.event.pull_request.merged == true"
     runs-on: ubuntu-latest
     steps:
       - name: "Run"
         env:
-          GitHubToken: ${{ secrets.GitHubToken }}
+          GitHubToken: ${{ secrets.GITHUBTOKEN }}
         run: |
           echo "This will only show if the PR has been merged (and not if it was closed without merging)."
-          # echo ${{ GitHubToken }}]
+          echo $env:GITHUB_TOKEN
           echo '${{ toJSON(github) }}'
