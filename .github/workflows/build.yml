@@ -222,7 +222,7 @@ jobs:
   Deploy_Stage_Deploy_Module:
     name: Deploy Module
     runs-on: ubuntu-latest
-    if: github.event.pull_request_merged == true
+    if: "github.event.pull_request.merged == true"
     needs:
       - Test_Stage_test_linux
       - Test_Stage_test_windows_core
@@ -240,7 +240,7 @@ jobs:
           path: ${{ env.buildFolderName }}
       - name: Publish Release
         env:
-          GitHubToken: ${{ env.GitHubToken }}
+          GitHubToken: ${{ secrets.GitHubToken }} #${{ env.GitHubToken }}
           GalleryApiToken: ${{ env.GalleryApiToken }}
           ReleaseBranch: ${{ env.defaultBranch }}
           MainGitBranch: ${{ env.defaultBranch }}
