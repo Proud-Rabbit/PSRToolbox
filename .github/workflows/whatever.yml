@@ -11,15 +11,28 @@ on:
   #   branches:
   #     - main
 
+defaults:
+  run:
+    shell: pwsh
+
 jobs:
   thejob:
     # if: "github.event.pull_request.merged == true"
     runs-on: ubuntu-latest
     steps:
       - name: "Run"
-        env:
-          GitHubToken: ${{ secrets.GITHUBTOKEN }}
         run: |
-          echo "This will only show if the PR has been merged (and not if it was closed without merging)."
-          echo $env:GITHUB_TOKEN
-          echo '${{ toJSON(github) }}'
+          $headers = @{}
+          $headers.Add("AccessToken", "token ${{ secrets.GITHUB_TOKEN }}")
+
+          $params = @{}
+          $params.Add("Uri", "https://api.github.com/repos/Proud-Rabbit/PSRToolbox/releases")
+          $params.Add("Method", "GET")
+          $params.Add("Headers", $headers)
+          $params.Add("UseDefaultCredentials", $true)
+          $params.Add("UseBasicParsing", $true)
+          $params.Add("TimeoutSec", 0)
+
+          [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12
+          $result = Invoke-WebRequest @params
+          Write-Host $result.Content
