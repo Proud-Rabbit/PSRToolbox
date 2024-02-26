@@ -142,3 +142,11 @@ jobs:
           status: '${{ fromJSON( steps.linux-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.linux-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.linux-test-results.outputs.json ).conclusion }}'
           color: ${{ env.LINUXBADGE_COLOR }}
           path: linux-badge.svg
+      - name: Upload Linux badge to Gist
+        if: >
+          github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' || github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+        uses: andymckay/append-gist-action@0.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          gistURL: https://gist.githubusercontent.com/
+          file: linux-badge.svg
