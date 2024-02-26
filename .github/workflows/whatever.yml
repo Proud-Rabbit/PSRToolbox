@@ -145,6 +145,8 @@ jobs:
           echo ("=" * 20)
           echo '$env.SSS'
           echo ("=" * 20)
+          echo '${{ secrets.GITHUB_TOKEN }}'
+          echo ("=" * 20)
       - name: Create Linux badge
         uses: emibcn/badge-action@v2.0.2
         with:
