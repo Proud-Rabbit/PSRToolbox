@@ -139,6 +139,6 @@ jobs:
         uses: emibcn/badge-action@v2.0.2
         with:
           label: Tests
-          status: '${{ fromJSON( steps.linux-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.linuc-test-results.output.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.linuc-test-results.output.json ).conclusion }}'
+          status: '${{ fromJSON( steps.linux-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.linux-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.linux-test-results.outputs.json ).conclusion }}'
           color: ${{ env.LINUXBADGE_COLOR }}
           path: linux-badge.svg
