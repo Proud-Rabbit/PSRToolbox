@@ -24,6 +24,7 @@ function ConvertFrom-PSRDiacritic
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true
         )]
+        [Alias('In')]
         [string]$StringIn
     )
 
