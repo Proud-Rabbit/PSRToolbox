@@ -274,7 +274,7 @@ jobs:
       #   uses: emibcn/badge-action@v1.2.1
       #   with:
       #     label: Tests
-      #     status: '${{ fromJSON( steps.linuc-test-results.output.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.linuc-test-results.output.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.linuc-test-results.output.json ).conclusion }}'
+      #     status: '${{ fromJSON( steps.linux-test-results.output.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.linuc-test-results.output.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.linuc-test-results.output.json ).conclusion }}'
       #     color: ${{ env.LINUXBADGE_COLOR }}
       #     path: linux-badge.svg
       # - name: Upload Linux badge to Gist
@@ -296,7 +296,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    # if: "github.event.pull_request.merged == true"
     if: success() && (github.ref == 'refs/heads/main')
     needs:
       - Test_Stage_test_linux
