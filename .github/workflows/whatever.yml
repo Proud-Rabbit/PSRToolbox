@@ -136,11 +136,13 @@ jobs:
               ;;
             esac
       - name: "Sec"
+        env:
+          SS: ${{ secrets.GithubToken }}
         run: |
           echo ("=" * 20)
-          echo '${{ secrets.GithubToken }}'
+          echo '$env:SS'
           echo ("=" * 20)
-          echo '${{ secrets.GITHUBTOKEN }}'
+          echo '$secrets.GITHUBTOKEN'
           echo ("=" * 20)
       - name: Create Linux badge
         uses: emibcn/badge-action@v2.0.2
