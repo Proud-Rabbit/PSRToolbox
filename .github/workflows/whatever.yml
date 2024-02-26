@@ -219,7 +219,7 @@ jobs:
           name: 'CodeCoverageWinPS51'
           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/
       - name: Publish Windows (Powershell) Test Results
-        id: linux-test-results
+        id: winps51-test-results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
