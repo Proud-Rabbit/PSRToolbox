@@ -296,7 +296,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    if: success() && (github.ref == 'refs/heads/main')
+    if: success() && ((github.ref == 'refs/heads/main') || (startsWith(github.ref, 'refs/tags/v')))
     needs:
       - Test_Stage_test_linux
       - Test_Stage_test_windows_core
