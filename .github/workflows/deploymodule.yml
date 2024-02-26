@@ -1,4 +1,4 @@
-name: Build PSConf2023
+name: CI
 on:
   push:
     branches:
@@ -50,9 +50,9 @@ jobs:
           name: ${{ env.buildArtifactName }}
           path: ${{ env.buildFolderName }}
 
-  Test_Stage_test_linux:
-    name: Linux
-    runs-on: ubuntu-latest
+  Test_Stage_test_windows_ps:
+    name: Windows (Powershell)
+    runs-on: windows-latest
     needs:
       - Build_Stage_Package_Module
     steps:
@@ -67,6 +67,7 @@ jobs:
           name: ${{ env.buildArtifactName }}
           path: ${{ env.buildFolderName }}
       - name: Run Tests
+        shell: powershell
         run: |
           ./build.ps1 -Tasks test
       - name: Publish Test Results
@@ -75,14 +76,14 @@ jobs:
         # if: (${{ job.status }} != 'cancelled')
         with:
           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
-          name: Linux
+          name: Windows (Powershell)
       - name: Publish Test Artifact
         uses: actions/upload-artifact@v4
         if: success() || failure()
         # if: (${{ job.status }} != 'cancelled')
         with:
           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
-          name: CodeCoverageLinux
+          name: CodeCoverageWinPS51
 
   Test_Stage_test_windows_core:
     name: Windows (PWSH)
@@ -118,9 +119,9 @@ jobs:
           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
           name: CodeCoverageWinPWSH
 
-  Test_Stage_test_windows_ps:
-    name: Windows (Windows PowerShell)
-    runs-on: windows-latest
+  Test_Stage_test_linux:
+    name: Linux
+    runs-on: ubuntu-latest
     needs:
       - Build_Stage_Package_Module
     steps:
@@ -135,23 +136,22 @@ jobs:
           name: ${{ env.buildArtifactName }}
           path: ${{ env.buildFolderName }}
       - name: Run Tests
-        shell: powershell
         run: |
-          .\build.ps1 -Tasks test
+          ./build.ps1 -Tasks test
       - name: Publish Test Results
         uses: actions/upload-artifact@v4
         if: success() || failure()
         # if: (${{ job.status }} != 'cancelled')
         with:
           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
-          name: Windows (Windows PowerShell)
+          name: Linux
       - name: Publish Test Artifact
         uses: actions/upload-artifact@v4
         if: success() || failure()
         # if: (${{ job.status }} != 'cancelled')
         with:
           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
-          name: CodeCoverageWinPS51
+          name: CodeCoverageLinux
 
   Test_Stage_test_macos:
     name: MacOS
@@ -189,14 +189,18 @@ jobs:
 
   Test_Stage_Code_Coverage:
     name: Publish Code Coverage
+    environment: GithubToken
     if: success() || failure()
+    permissions:
+      checks: write
+      pull-requests: write
     runs-on: ubuntu-latest
     needs:
       - Build_Stage_Package_Module
-      - Test_Stage_test_macos
-      - Test_Stage_test_linux
-      - Test_Stage_test_windows_core
       - Test_Stage_test_windows_ps
+      - Test_Stage_test_windows_core
+      - Test_Stage_test_linux
+      - Test_Stage_test_macos
     steps:
       - name: Checkout
         uses: actions/checkout@main
@@ -213,82 +217,178 @@ jobs:
         with:
           name: ${{ env.buildArtifactName }}
           path: ${{ env.buildFolderName }}
-      - name: Download Test Artifact MacOS
+
+      - name: Download Test Artifact Windows (Powershell)
         uses: actions/download-artifact@v4
         with:
-          name: 'CodeCoverageMacOS'
-          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/
+          name: 'CodeCoverageWinPS51'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPS51/
+      - name: Publish Windows (Powershell) Test Results
+        id: winps51-test-results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPS51/NUnit*.xml
+          check_name: Windows (Powershell) Test Result
+
       - name: Download Test Artifact Windows (PWSH)
         uses: actions/download-artifact@v4
         with:
           name: 'CodeCoverageWinPWSH'
           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPWSH/
+      - name: Publish Windows (Powershell) Test Results
+        id: winpwsh-test-results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPWSH/NUnit*.xml
+          check_name: Windows (PWSH) Test Result
+
       - name: Download Test Artifact Linux
         uses: actions/download-artifact@v4
         with:
           name: 'CodeCoverageLinux'
           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/
-      # - name: Publish MacOS Test Results
-      #   id: macos-test-results
-      #   uses: EnricoMi/publish-unit-test-result-action@v2
-      #   if: always()
-      #   with:
-      #     nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/NUnit*.xml
-      #     check_name: MacOS Test Result
-      # - name: Publish Linux Test Results
-      #   id: linux-test-results
-      #   uses: EnricoMi/publish-unit-test-result-action@v2
-      #   if: always()
-      #   with:
-      #     nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/NUnit*.xml
-      #     check_name: Linux Test Result
-      # - name: Publish WinPS51 Test Results
-      #   id: winps51-test-results
-      #   uses: EnricoMi/publish-unit-test-result-action@v2
-      #   if: always()
-      #   with:
-      #     nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPS51/NUnit*.xml
-      #     check_name: WinPS51 Test Result
-      # - name: Publish WinPWSH Test Results
-      #   id: winps51-test-results
-      #   uses: EnricoMi/publish-unit-test-result-action@v2
-      #   if: always()
-      #   with:
-      #     nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPWSH/NUnit*.xml
-      #     check_name: WinPWSH Test Result
-      # - name: Set Linux badge color
-      #   shell: bash
-      #   run: |
-      #     case ${{ fromJSON( steps.linux-test-results.outputs.json ).conclusion }} in
-      #       success)
-      #         echo "LINUXBADGE_COLOR=31c653" >> $GITHUB_ENV
-      #         ;;
-      #       failure)
-      #         echo "LINUXBADGE_COLOR=800000" >> $GITHUB_ENV
-      #         ;;
-      #       neutral)
-      #         echo "LINUXBADGE_COLOR=696969" >> $GITHUB_ENV
-      #         ;;
-      #       esac
-      # - name: Create Linux badge
-      #   uses: emibcn/badge-action@v1.2.1
-      #   with:
-      #     label: Tests
-      #     status: '${{ fromJSON( steps.linux-test-results.output.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.linuc-test-results.output.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.linuc-test-results.output.json ).conclusion }}'
-      #     color: ${{ env.LINUXBADGE_COLOR }}
-      #     path: linux-badge.svg
-      # - name: Upload Linux badge to Gist
-      #   if: >
-      #     github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' || github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
-      #   uses: andymckay/append-gist-action@0.2
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     gistURL: https://gist.githubusercontent.com/
-      #     file: linux-badge.svg
-      - name: 'Merge Code Coverage files'
+      - name: Publish Linux Test Results
+        id: linux-test-results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/NUnit*.xml
+          check_name: Linux Test Result
+
+      - name: Download Test Artifact MacOS
+        uses: actions/download-artifact@v4
+        with:
+          name: 'CodeCoverageMacOS'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/
+      - name: Publish Windows (Powershell) Test Results
+        id: macos-test-results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/NUnit*.xml
+          check_name: MacOS Test Result
+
+      - name: Set Windows (Powershell) badge color
+        shell: bash
         run: |
-          ./build.ps1 -Tasks merge
-      # -name: 'Publish GitHub Code Coverage'
+          case ${{ fromJSON( steps.winps51-test-results.outputs.json ).conclusion }} in
+            success)
+              echo "WINPS51BADGE_COLOR=31c653" >> $GITHUB_ENV
+              ;;
+            failure)
+              echo "WINPS51BADGE_COLOR=800000" >> $GITHUB_ENV
+              ;;
+            neutral)
+              echo "WINPS51BADGE_COLOR=696969" >> $GITHUB_ENV
+              ;;
+            esac
+      - name: Create Windows (Powershell) badge
+        uses: emibcn/badge-action@v2.0.2
+        with:
+          label: Tests
+          status: '${{ fromJSON( steps.winps51-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.winps51-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.winps51-test-results.outputs.json ).conclusion }}'
+          color: ${{ env.WINPS51BADGE_COLOR }}
+          path: winps51-badge.svg
+      - name: Upload Windows (Powershell) badge to Gist
+        # if: >
+        #   github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' || github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+        uses: andymckay/append-gist-action@0.2
+        with:
+          token: ${{ secrets.GithubToken }}
+          gistURL: https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13
+          file: winps51-badge.svg
+
+      - name: Set Windows (PWSH) badge color
+        shell: bash
+        run: |
+          case ${{ fromJSON( steps.winpwsh-test-results.outputs.json ).conclusion }} in
+            success)
+              echo "WINPWSHBADGE_COLOR=31c653" >> $GITHUB_ENV
+              ;;
+            failure)
+              echo "WINPWSHBADGE_COLOR=800000" >> $GITHUB_ENV
+              ;;
+            neutral)
+              echo "WINPWSHBADGE_COLOR=696969" >> $GITHUB_ENV
+              ;;
+            esac
+      - name: Create Windows (PWSH) badge
+        uses: emibcn/badge-action@v2.0.2
+        with:
+          label: Tests
+          status: '${{ fromJSON( steps.winpwsh-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.winpwsh-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.winpwsh-test-results.outputs.json ).conclusion }}'
+          color: ${{ env.WINPWSHBADGE_COLOR }}
+          path: winpwsh-badge.svg
+      - name: Upload Windows (PWSH) badge to Gist
+        # if: >
+        #   github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' || github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+        uses: andymckay/append-gist-action@0.2
+        with:
+          token: ${{ secrets.GithubToken }}
+          gistURL: https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13
+          file: winpwsh-badge.svg
+
+      - name: Set Linux badge color
+        shell: bash
+        run: |
+          case ${{ fromJSON( steps.linux-test-results.outputs.json ).conclusion }} in
+            success)
+              echo "LINUXBADGE_COLOR=31c653" >> $GITHUB_ENV
+              ;;
+            failure)
+              echo "LINUXBADGE_COLOR=800000" >> $GITHUB_ENV
+              ;;
+            neutral)
+              echo "LINUXBADGE_COLOR=696969" >> $GITHUB_ENV
+              ;;
+            esac
+      - name: Create Linux badge
+        uses: emibcn/badge-action@v2.0.2
+        with:
+          label: Tests
+          status: '${{ fromJSON( steps.linux-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.linux-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.linux-test-results.outputs.json ).conclusion }}'
+          color: ${{ env.LINUXBADGE_COLOR }}
+          path: linux-badge.svg
+      - name: Upload Linux badge to Gist
+        # if: >
+        #   github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' || github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+        uses: andymckay/append-gist-action@0.2
+        with:
+          token: ${{ secrets.GithubToken }}
+          gistURL: https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13
+          file: linux-badge.svg
+
+      - name: Set MacOS badge color
+        shell: bash
+        run: |
+          case ${{ fromJSON( steps.macos-test-results.outputs.json ).conclusion }} in
+            success)
+              echo "MACOSBADGE_COLOR=31c653" >> $GITHUB_ENV
+              ;;
+            failure)
+              echo "MACOSBADGE_COLOR=800000" >> $GITHUB_ENV
+              ;;
+            neutral)
+              echo "MACOSBADGE_COLOR=696969" >> $GITHUB_ENV
+              ;;
+            esac
+      - name: Create MacOS badge
+        uses: emibcn/badge-action@v2.0.2
+        with:
+          label: Tests
+          status: '${{ fromJSON( steps.macos-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.macos-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.macos-test-results.outputs.json ).conclusion }}'
+          color: ${{ env.MACOSBADGE_COLOR }}
+          path: macos-badge.svg
+      - name: Upload MacOS badge to Gist
+        # if: >
+        #   github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' || github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+        uses: andymckay/append-gist-action@0.2
+        with:
+          token: ${{ secrets.GithubToken }}
+          gistURL: https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13
+          file: macos-badge.svg
 
   Deploy_Stage_Deploy_Module:
     name: Deploy Module
