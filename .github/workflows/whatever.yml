@@ -148,5 +148,5 @@ jobs:
         uses: andymckay/append-gist-action@0.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          gistURL: https://gist.githubusercontent.com/
+          gistURL: https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13
           file: linux-badge.svg
