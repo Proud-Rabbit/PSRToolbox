@@ -18,6 +18,7 @@
 function ConvertFrom-PSRDiacritic
 {
     [cmdletbinding()]
+    [OutputType([string])]
     param (
         [Parameter(
             Mandatory = $true,
