@@ -217,7 +217,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: 'CodeCoverageWinPS51'
-          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPS51/
       - name: Publish Windows (Powershell) Test Results
         id: winps51-test-results
         uses: EnricoMi/publish-unit-test-result-action@v2
