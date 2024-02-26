@@ -120,7 +120,7 @@ jobs:
           check_name: Linux Test Result
       - name: "Run"
         run: |
-          echo '${{ toJSON(github) }}'
+          echo '${{ toJSON(steps) }}'
       - name: Set Linux badge color
         shell: bash
         run: |
