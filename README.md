@@ -4,7 +4,7 @@ Bundle of handy Powershell functions
 
 ## Status
 
-[Linux Test](https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13/raw/linux-badge.svg)
+![Linux Test](https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13/raw/linux-badge.svg)
 
 ## Code of Conduct
 
