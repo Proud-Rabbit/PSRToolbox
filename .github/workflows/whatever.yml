@@ -232,7 +232,7 @@ jobs:
           name: 'CodeCoverageWinPWSH'
           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPWSH/
       - name: Publish Windows (Powershell) Test Results
-        id: winps51-test-results
+        id: winpwsh-test-results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
@@ -258,7 +258,7 @@ jobs:
           name: 'CodeCoverageMacOS'
           path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/
       - name: Publish Windows (Powershell) Test Results
-        id: winps51-test-results
+        id: macos-test-results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
