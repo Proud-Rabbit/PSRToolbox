@@ -141,9 +141,9 @@ jobs:
           SSS: ${{ secrets.GITHUBTOKEN }}
         run: |
           echo ("=" * 20)
-          echo '${{ env.SS }}'
+          echo "$env:SS"
           echo ("=" * 20)
-          echo '$env.SSS'
+          echo "$env:SSS"
           echo ("=" * 20)
           echo '${{ secrets.GITHUB_TOKEN }}'
           echo ("=" * 20)
