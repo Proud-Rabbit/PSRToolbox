@@ -226,6 +226,19 @@ jobs:
           nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPS51/NUnit*.xml
           check_name: Windows (Powershell) Test Result
 
+      - name: Download Test Artifact Windows (PWSH)
+        uses: actions/download-artifact@v4
+        with:
+          name: 'CodeCoverageWinPWSH'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPWSH/
+      - name: Publish Windows (Powershell) Test Results
+        id: winps51-test-results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageWinPWSH/NUnit*.xml
+          check_name: Windows (PWSH) Test Result
+
       - name: Download Test Artifact Linux
         uses: actions/download-artifact@v4
         with:
@@ -238,9 +251,20 @@ jobs:
         with:
           nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/NUnit*.xml
           check_name: Linux Test Result
-      - name: "Run"
-        run: |
-          echo '${{ toJSON(steps) }}'
+
+      - name: Download Test Artifact MacOS
+        uses: actions/download-artifact@v4
+        with:
+          name: 'CodeCoverageMacOS'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/
+      - name: Publish Windows (Powershell) Test Results
+        id: winps51-test-results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/NUnit*.xml
+          check_name: MacOS Test Result
+
       - name: Set Linux badge color
         shell: bash
         run: |
