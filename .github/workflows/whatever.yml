@@ -82,6 +82,7 @@ jobs:
 
   Test_Stage_Code_Coverage:
     name: Publish Code Coverage
+    environment: GithubToken
     if: success() || failure()
     permissions:
       checks: write
