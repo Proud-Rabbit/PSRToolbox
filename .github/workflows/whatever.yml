@@ -265,6 +265,66 @@ jobs:
           nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageMacOS/NUnit*.xml
           check_name: MacOS Test Result
 
+      - name: Set Windows (Powershell) badge color
+        shell: bash
+        run: |
+          case ${{ fromJSON( steps.winps51-test-results.outputs.json ).conclusion }} in
+            success)
+              echo "WINPS51BADGE_COLOR=31c653" >> $GITHUB_ENV
+              ;;
+            failure)
+              echo "WINPS51BADGE_COLOR=800000" >> $GITHUB_ENV
+              ;;
+            neutral)
+              echo "WINPS51BADGE_COLOR=696969" >> $GITHUB_ENV
+              ;;
+            esac
+      - name: Create Windows (Powershell) badge
+        uses: emibcn/badge-action@v2.0.2
+        with:
+          label: Tests
+          status: '${{ fromJSON( steps.winps51-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.winps51-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.winps51-test-results.outputs.json ).conclusion }}'
+          color: ${{ env.WINPS51BADGE_COLOR }}
+          path: winps51-badge.svg
+      - name: Upload Windows (Powershell) badge to Gist
+        # if: >
+        #   github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' || github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+        uses: andymckay/append-gist-action@0.2
+        with:
+          token: ${{ secrets.GithubToken }}
+          gistURL: https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13
+          file: winps51-badge.svg
+
+      - name: Set Windows (PWSH) badge color
+        shell: bash
+        run: |
+          case ${{ fromJSON( steps.winpwsh-test-results.outputs.json ).conclusion }} in
+            success)
+              echo "WINPWSHBADGE_COLOR=31c653" >> $GITHUB_ENV
+              ;;
+            failure)
+              echo "WINPWSHBADGE_COLOR=800000" >> $GITHUB_ENV
+              ;;
+            neutral)
+              echo "WINPWSHBADGE_COLOR=696969" >> $GITHUB_ENV
+              ;;
+            esac
+      - name: Create Windows (PWSH) badge
+        uses: emibcn/badge-action@v2.0.2
+        with:
+          label: Tests
+          status: '${{ fromJSON( steps.winpwsh-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.winpwsh-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.winpwsh-test-results.outputs.json ).conclusion }}'
+          color: ${{ env.WINPWSHBADGE_COLOR }}
+          path: winpwsh-badge.svg
+      - name: Upload Windows (PWSH) badge to Gist
+        # if: >
+        #   github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' || github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+        uses: andymckay/append-gist-action@0.2
+        with:
+          token: ${{ secrets.GithubToken }}
+          gistURL: https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13
+          file: winpwsh-badge.svg
+
       - name: Set Linux badge color
         shell: bash
         run: |
@@ -279,21 +339,6 @@ jobs:
               echo "LINUXBADGE_COLOR=696969" >> $GITHUB_ENV
               ;;
             esac
-      - name: "Sec"
-        env:
-          SS: ${{ secrets.GithubToken }}
-          SSS: ${{ secrets.GITHUBTOKEN }}
-          SSSS: "Dolores Ipsum"
-        run: |
-          echo ("=" * 20)
-          echo "$env:SS"
-          echo ("=" * 20)
-          echo "$env:SSS"
-          echo ("=" * 20)
-          echo "${{ secrets.GITHUBTOKEN }}"
-          echo ("=" * 20)
-          echo '${{ secrets.GITHUB_TOKEN }}'
-          echo ("=" * 20)
       - name: Create Linux badge
         uses: emibcn/badge-action@v2.0.2
         with:
@@ -309,3 +354,33 @@ jobs:
           token: ${{ secrets.GithubToken }}
           gistURL: https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13
           file: linux-badge.svg
+
+      - name: Set MacOS badge color
+        shell: bash
+        run: |
+          case ${{ fromJSON( steps.macos-test-results.outputs.json ).conclusion }} in
+            success)
+              echo "MACOSBADGE_COLOR=31c653" >> $GITHUB_ENV
+              ;;
+            failure)
+              echo "MACOSBADGE_COLOR=800000" >> $GITHUB_ENV
+              ;;
+            neutral)
+              echo "MACOSBADGE_COLOR=696969" >> $GITHUB_ENV
+              ;;
+            esac
+      - name: Create MacOS badge
+        uses: emibcn/badge-action@v2.0.2
+        with:
+          label: Tests
+          status: '${{ fromJSON( steps.macos-test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.macos-test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.macos-test-results.outputs.json ).conclusion }}'
+          color: ${{ env.MACOSBADGE_COLOR }}
+          path: macos-badge.svg
+      - name: Upload MacOS badge to Gist
+        # if: >
+        #   github.event_name == 'workflow_run' && github.event.workflow_run.head_branch == 'main' || github.event_name != 'workflow_run' && github.ref == 'refs/heads/main'
+        uses: andymckay/append-gist-action@0.2
+        with:
+          token: ${{ secrets.GithubToken }}
+          gistURL: https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13
+          file: macos-badge.svg
