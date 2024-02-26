@@ -139,11 +139,14 @@ jobs:
         env:
           SS: ${{ secrets.GithubToken }}
           SSS: ${{ secrets.GITHUBTOKEN }}
+          SSSS: "Dolores Ipsum"
         run: |
           echo ("=" * 20)
           echo "$env:SS"
           echo ("=" * 20)
           echo "$env:SSS"
+          echo ("=" * 20)
+          echo "$env:SSSS"
           echo ("=" * 20)
           echo '${{ secrets.GITHUB_TOKEN }}'
           echo ("=" * 20)
