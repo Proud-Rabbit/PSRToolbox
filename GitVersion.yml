@@ -14,7 +14,7 @@ branches:
   feature:
     tag: useBranchName
     increment: Minor
-    regex: f(eature(s)?)?[\/-]|ProudRabbit
+    regex: f(eature(s)?)?[\/-]
     source-branches: ['master']
   hotfix:
     tag: fix

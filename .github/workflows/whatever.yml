@@ -2,9 +2,11 @@ name: Do something on merge into main
 
 # Trigger when a pull request into main branch is closed, which can happen either on merge or manual close...
 on:
-  push:
-    branches:
-      - ProudRabbit
+  workflow_dispatch:
+
+  # push:
+  #   branches:
+  #     - ProudRabbit
 
   # pull_request:
   #   types: [closed]

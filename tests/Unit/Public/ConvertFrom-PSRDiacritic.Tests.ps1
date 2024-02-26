@@ -10,13 +10,6 @@ AfterAll {
 }
 
 Describe ConvertFrom-PSRDiacritic {
-    BeforeAll {
-        Mock -CommandName Get-PrivateFunction -MockWith {
-            # This return the value passed to the Get-PrivateFunction parameter $PrivateData.
-            $PrivateData
-        } -ModuleName $dscModuleName
-    }
-
     Context 'When passing values using named parameters' {
         It 'Should not throw an error' {
             { ConvertFrom-PSRDiacritic -StringIn "ŒœǢöäüßÖÜÄ" } | Should -Not -Throw
