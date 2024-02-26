@@ -2,6 +2,10 @@
 
 Bundle of handy Powershell functions
 
+## Status
+
+[Linux Test](https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13/raw/linux-badge.svg)
+
 ## Code of Conduct
 
 This project has adopted [this code of conduct](CODE_OF_CONDUCT.md).
