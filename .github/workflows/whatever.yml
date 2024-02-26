@@ -147,7 +147,7 @@ jobs:
           echo ("=" * 20)
           echo "$env:SSS"
           echo ("=" * 20)
-          echo "$env:SSSS"
+          echo "${{ secrets.GITHUBTOKEN }}"
           echo ("=" * 20)
           echo '${{ secrets.GITHUB_TOKEN }}'
           echo ("=" * 20)
