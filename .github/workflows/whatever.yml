@@ -118,9 +118,9 @@ jobs:
         with:
           nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/NUnit*.xml
           check_name: Linux Test Result
-      - name: D
+      - name: "Run"
         run: |
-          echo '${{ fromJSON( github ) }}'
+          echo '${{ toJSON(github) }}'
       - name: Set Linux badge color
         shell: bash
         run: |
