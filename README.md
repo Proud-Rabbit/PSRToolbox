@@ -4,7 +4,13 @@ Bundle of handy Powershell functions
 
 ## Status
 
-![Linux Test](https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13/raw/linux-badge.svg)
+![Windows badge](https://badgen.net/badge/icon/windows?icon=windows&label=ps5.1) ![Linux Test](https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13/raw/linux-badge.svg)
+
+![Windows badge](https://badgen.net/badge/icon/windows?icon=windows&label=pwsh) ![Linux Test](https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13/raw/linux-badge.svg)
+
+![Ubuntu Linux](https://badgen.net/badge/icon/Ubuntu?icon=terminal&label=pwsh) ![Linux Test](https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13/raw/linux-badge.svg)
+
+![Ubuntu Linux](https://badgen.net/badge/icon/MacOS?icon=apple&label=pwsh) ![MacOS Test](https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13/raw/macos-badge.svg)
 
 ## Code of Conduct
 
