@@ -1,40 +1,122 @@
-name: Do something on merge into main
-
-# Trigger when a pull request into main branch is closed, which can happen either on merge or manual close...
+name: Build PSConf2023
 on:
-  workflow_dispatch:
-
-  # push:
-  #   branches:
-  #     - ProudRabbit
-
-  # pull_request:
-  #   types: [closed]
-  #   branches:
-  #     - main
+  push:
+    branches:
+      - feature-labels
+    paths-ignore:
+      - CHANGELOG.md
+      - .github/**
 
 defaults:
   run:
     shell: pwsh
 
+env:
+  buildFolderName: output
+  buildArtifactName: output
+  testResultFolderName: testResults
+  defaultBranch: main
+
 jobs:
-  thejob:
-    # if: "github.event.pull_request.merged == true"
+  Build_Stage_Package_Module:
+    name: Package Module
     runs-on: ubuntu-latest
     steps:
-      - name: "Run"
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Setup GitVersion
+        uses: gittools/actions/gitversion/setup@v0
+        with:
+          versionSpec: "5.x"
+      - name: Evaluate Next Version
+        uses: gittools/actions/gitversion/execute@v0
+        with:
+          configFilePath: GitVersion.yml
+      - name: Builde & Package Module
+        env:
+          ModuleVersion: ${{ env.gitVersion.NuGetVersionV2 }}
         run: |
-          $headers = @{}
-          $headers.Add("AccessToken", "token ${{ secrets.GITHUB_TOKEN }}")
+          ./build.ps1 -ResolveDependency -Tasks pack -Verbose
+      - name: Publish Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
 
-          $params = @{}
-          $params.Add("Uri", "https://api.github.com/repos/Proud-Rabbit/PSRToolbox/releases")
-          $params.Add("Method", "GET")
-          $params.Add("Headers", $headers)
-          $params.Add("UseDefaultCredentials", $true)
-          $params.Add("UseBasicParsing", $true)
-          $params.Add("TimeoutSec", 0)
+  Test_Stage_test_linux:
+    name: Linux
+    runs-on: ubuntu-latest
+    needs:
+      - Build_Stage_Package_Module
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+      - name: Run Tests
+        run: |
+          ./build.ps1 -Tasks test
+      - name: Publish Test Results
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        # if: (${{ job.status }} != 'cancelled')
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/NUnit*.xml
+          name: Linux
+      - name: Publish Test Artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        # if: (${{ job.status }} != 'cancelled')
+        with:
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/
+          name: CodeCoverageLinux
 
-          [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12
-          $result = Invoke-WebRequest @params
-          Write-Host $result.Content
+
+  Test_Stage_Code_Coverage:
+    name: Publish Code Coverage
+    if: success() || failure()
+    runs-on: ubuntu-latest
+    needs:
+      - Build_Stage_Package_Module
+      - Test_Stage_test_linux
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+      - name: Set Environment Variables
+        run: |
+          $repositoryOwner,$repositoryName = $env:GITHUB_REPOSITORY -split '/'
+          echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
+          echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
+      - name: Download Pipeline Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.buildArtifactName }}
+          path: ${{ env.buildFolderName }}
+      - name: Download Test Artifact Linux
+        uses: actions/download-artifact@v4
+        with:
+          name: 'CodeCoverageLinux'
+          path: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/
+      - name: Publish Linux Test Results
+        id: linux-test-results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/NUnit*.xml
+          check_name: Linux Test Result
+      - name: 'Merge Code Coverage files'
+        run: |
+          ./build.ps1 -Tasks merge
+      # -name: 'Publish GitHub Code Coverage'
