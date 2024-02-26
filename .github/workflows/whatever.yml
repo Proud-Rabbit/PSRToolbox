@@ -1,11 +1,10 @@
-name: Build PSConf2023
+name: Build Labels
 on:
   push:
     branches:
       - feature-labels
     paths-ignore:
       - CHANGELOG.md
-      - .github/**
 
 defaults:
   run:
