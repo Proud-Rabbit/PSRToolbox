@@ -118,7 +118,17 @@ jobs:
         with:
           nunit_files: ${{ env.buildFolderName }}/${{ env.testResultFolderName }}/CodeCoverageLinux/NUnit*.xml
           check_name: Linux Test Result
-      - name: 'Merge Code Coverage files'
+      - name: Set Linux badge color
+        shell: bash
         run: |
-          ./build.ps1 -Tasks merge
-      # -name: 'Publish GitHub Code Coverage'
+          case ${{ fromJSON( steps.linux-test-results.outputs.json ).conclusion }} in
+            success)
+              echo "LINUXBADGE_COLOR=31c653" >> $GITHUB_ENV
+              ;;
+            failure)
+              echo "LINUXBADGE_COLOR=800000" >> $GITHUB_ENV
+              ;;
+            neutral)
+              echo "LINUXBADGE_COLOR=696969" >> $GITHUB_ENV
+              ;;
+            esac
