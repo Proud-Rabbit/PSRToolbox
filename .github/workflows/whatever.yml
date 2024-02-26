@@ -133,7 +133,7 @@ jobs:
               ;;
             esac
       - name: Create Linux badge
-        uses: emibcn/badge-action@v2
+        uses: emibcn/badge-action@v2.0.2
         with:
           label: Tests
           status: '${{ fromJSON( steps.linux-test-results.output.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.linuc-test-results.output.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.linuc-test-results.output.json ).conclusion }}'
