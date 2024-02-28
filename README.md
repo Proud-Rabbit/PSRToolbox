@@ -34,3 +34,5 @@ A full list of changes in each version can be found in the [change log](CHANGELO
 ## Functions
 
 - ConvertFrom-PSRDiacritic
+- Test-PSRIBAN
+- Test-PSREEAPhoneNumber
