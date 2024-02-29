@@ -52,6 +52,8 @@ BuildWorkflow:
     - Build_Module_ModuleBuilder
     - Build_NestedModules_ModuleBuilder
     - Create_changelog_release_output
+    - Generate_Wiki_Content
+    - Generate_Wiki_Sidebar
 
 
   pack:
@@ -76,8 +78,6 @@ BuildWorkflow:
     - Merge_CodeCoverage_Files
 
   publish:
-    - Generate_Wiki_Content
-    - Generate_Wiki_Sidebar
     - publish_module_to_gallery
     - Publish_Release_To_GitHub
     - Publish_GitHub_Wiki_Content
