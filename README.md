@@ -4,6 +4,9 @@ Bundle of handy Powershell functions
 
 ## Status
 
+![license](https:://bedgen.net/github/license/Proud-Rabbit/PSRTookit) - ![release](https:://bedgen.net/github/release/Proud-Rabbit/PSRTookit)
+
+
 ![Windows PS51 badge](https://badgen.net/badge/icon/windows?icon=windows&label=ps5.1) ![Windows Powershell](https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13/raw/winps51-badge.svg)
 
 ![Windows PWSH badge](https://badgen.net/badge/icon/windows?icon=windows&label=pwsh) ![Windows PWSH](https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13/raw/winpwsh-badge.svg)
