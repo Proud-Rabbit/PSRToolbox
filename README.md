@@ -1,12 +1,16 @@
 # PSRToolkit
 
+![license](https://badgen.net/github/license/Proud-Rabbit/PSRToolbox) ![stable release](https://badgen.net/github/release/Proud-Rabbit/PSRToolbox/stable)
+
 Bundle of handy Powershell functions
+
+[![nuget](https://badgen.net/badge/icon/packages?icon=nuget&label&color=orange&scale=2)](https://github.com/Proud-Rabbit/PSRToolbox/releases/latest)
 
 ## Status
 
-![Windows PS51 badge](https://badgen.net/badge/icon/windows?icon=windows&label=ps5.1) ![Windows Powershell](https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13/raw/winps51-badge.svg)
+![Windows PS51 badge](https://badgen.net/badge/icon/Windows?icon=windows&label=ps5.1) ![Windows Powershell](https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13/raw/winps51-badge.svg)
 
-![Windows PWSH badge](https://badgen.net/badge/icon/windows?icon=windows&label=pwsh) ![Windows PWSH](https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13/raw/winpwsh-badge.svg)
+![Windows PWSH badge](https://badgen.net/badge/icon/Windows?icon=windows&label=pwsh) ![Windows PWSH](https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13/raw/winpwsh-badge.svg)
 
 ![Ubuntu Linux](https://badgen.net/badge/icon/Ubuntu?icon=terminal&label=pwsh) ![Linux Test](https://gist.githubusercontent.com/Proud-Rabbit/79ca127fedb0c195b29ceebd5a963a13/raw/linux-badge.svg)
 
