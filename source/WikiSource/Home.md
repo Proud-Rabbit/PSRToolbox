@@ -4,7 +4,6 @@
 
 [![nuget](https://badgen.net/badge/icon/packages?icon=nuget&label&color=orange&scale=2)](https://github.com/Proud-Rabbit/PSRToolbox/releases/latest)
 
-
 ## Summary
 
 This module has some exported functions to deal with various tasks that you could find to do in Powershell
